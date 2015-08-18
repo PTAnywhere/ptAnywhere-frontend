@@ -1,0 +1,199 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>uk.ac.open.kmi.forge.ptAnywhere</groupId>
+    <artifactId>widgets</artifactId>
+    <packaging>war</packaging>
+    <version>0.4-SNAPSHOT</version>
+    <name>PTAnywhere widgets</name>
+
+
+    <properties>
+        <jersey.version>2.18</jersey.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <env>devel</env>  <!-- Default environment: development. -->
+        <propFile>null</propFile>
+        <property-file.path.default>${project.basedir}/src/main/resources</property-file.path.default>
+    </properties>
+
+    <build>
+        <finalName>ptAnywhere</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.5.1</version>
+                <inherited>true</inherited>
+                <configuration>
+                    <source>1.7</source>
+                    <target>1.7</target>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.4.0</version>
+                <configuration>
+                    <executable>mvn</executable>
+                    <arguments>
+                        <!-- To ensure that the properties are loaded before the redeploy without
+                            making the goal dependant of any phase (e.g., clean). -->
+                        <argument>properties:read-project-properties</argument>
+                        <argument>tomcat7:redeploy</argument>
+                        <argument>-Denv=${env}</argument>
+                        <argument>-Dcustom.propFile=${propFile}</argument>
+                    </arguments>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>properties-maven-plugin</artifactId>
+                <version>1.0-alpha-2</version>
+                <configuration>
+                    <files>
+                        <file>${property-file}</file>
+                    </files>
+                    <outputFile/>
+                    <properties/>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat7-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>${tomcat.url}</url>
+                    <server>${tomcat.server}</server>
+                    <path>${tomcat.path}</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.tomcat.maven</groupId>
+                <artifactId>tomcat6-maven-plugin</artifactId>
+                <version>2.2</version>
+                <configuration>
+                    <url>http://carre.kmi.open.ac.uk:8080/manager</url>
+                    <server>carreServer</server>
+                    <path>/webPacketTracer</path>
+                </configuration>
+            </plugin>
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                        <configuration>
+                            <tasks>
+                                <delete file="${project.build.outputDirectory}/environment.properties"/>
+                                <copy file="${property-file}"
+                                      tofile="${project.build.outputDirectory}/environment.properties"/>
+                            </tasks>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+    <profiles>
+        <profile>
+            <id>env-development</id>
+            <!-- Activated by default or when -Denv=devel is given as parameter. -->
+            <activation>
+                <!-- Note: this seems redundant as I already set it as the default value in the properties section. -->
+                <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>env</name>
+                    <value>devel</value>
+                </property>
+            </activation>
+            <properties>
+                <property-file>${property-file.path.default}/environment.dev.properties</property-file>
+            </properties>
+        </profile>
+        <profile>
+            <id>env-testing</id>
+            <!-- Activated when -Denv=test is given as parameter. -->
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
+            </activation>
+            <properties>
+                <property-file>${property-file.path.default}/environment.test.properties</property-file>
+            </properties>
+        </profile>
+        <profile>
+            <id>env-production</id>
+            <!-- Activated when -Denv=prod is given as parameter. -->
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>prod</value>
+                </property>
+            </activation>
+            <properties>
+                <property-file>${property-file.path.default}/environment.properties</property-file>
+            </properties>
+        </profile>
+        <profile>
+            <id>env-customizable</id>
+            <!-- Activated by default or when -Denv=custom is given as parameter. -->
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>custom</value>
+                </property>
+            </activation>
+            <properties>
+                <property-file>${custom.propFile}</property-file>
+            </properties>
+        </profile>
+    </profiles>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.glassfish.jersey</groupId>
+                <artifactId>jersey-bom</artifactId>
+                <version>${jersey.version}</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <!-- <artifactId>jersey-container-servlet-core</artifactId> -->
+            <!-- use the following artifactId if you don't need servlet 2.x compatibility -->
+            <artifactId>jersey-container-servlet</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-moxy</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-mvc-freemarker</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.connectors</groupId>
+            <artifactId>jersey-apache-connector</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.main.extras</groupId>
+            <artifactId>glassfish-embedded-web</artifactId>
+            <scope>provided</scope>
+            <version>4.1</version>
+        </dependency>
+    </dependencies>
+
+</project>

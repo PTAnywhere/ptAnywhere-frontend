@@ -12,7 +12,7 @@
             #current { display: block; height: 10pt; }
         </style>
 
-        <script src="${base}/libs/jquery/jquery.js"></script>
+        <#include "headers/jquery.ftl">
         <script>
              var ws = null;
 

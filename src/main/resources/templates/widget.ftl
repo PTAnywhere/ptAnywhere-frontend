@@ -4,7 +4,7 @@
     <title>${title}</title>
     <link rel="icon" type="image/png" href="${base}/images/icon.png">
 
-    <#include "headers/jquery.ftl">
+    <#include "headers/jquery-with-ui.ftl">
     <#include "headers/visjs.ftl">
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>

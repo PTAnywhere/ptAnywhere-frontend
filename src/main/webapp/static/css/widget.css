@@ -89,37 +89,25 @@ div.logos img {
 
 /* Edit menu */
 
-div.network-manipulation-editMode {
+div.vis-network div.vis-edit-mode {
     margin: 0;
     padding: 0;  /* Sth changes in the dev vis.js css */
     height: 30px;
 }
 
-div.network-manipulationDiv {
+div.vis-network div.vis-manipulation {
     background: none;
     padding: 10px 0 0 10px; /* Sth changes in the dev vis.js css */
     height: 40px;
 }
 
-div.network-manipulation-closeDiv {
+div.vis-network div.vis-close {
     margin: 6px 12px 0 0;
 }
 
-span.network-manipulationUI {
-    margin: 0;
-}
-
-div.network-seperatorLine {
+div.vis-network div.vis-manipulation div.vis-separator-line {
 	width: 0;
-	margin: 5px 0 0px 0;
-}
-
-/*
- * Until this feature is implemented (if it is ever implemented), the edit edge option is disabled.
- * Delete and create a new edge instead.
- */
-div.edit.edge {
-    display: none;
+	margin: 5px 0 0 0;
 }
 
 

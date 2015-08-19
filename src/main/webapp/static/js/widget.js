@@ -531,15 +531,15 @@ var networkMap = (function () {
         if (network==null) {
             // create a network
             var visData = { nodes : nodes, edges : edges };
+            var iconsPath = '../../static/images/';
             var options = {
-                //dragNetwork : false,
-                //dragNodes : true,
-                //zoomable : false,
-                stabilize: true,
-                dataManipulation: true,
+                nodes:{
+                    physics: false,
+                    font: '14px verdana black',
+                },
                 edges: {
                     width: 3,
-                    widthSelectionMultiplier: 1.4,
+                    selectionWidth: 1.4,
                     color: {
                         color:'#606060',
                         highlight:'#000000',
@@ -550,41 +550,55 @@ var networkMap = (function () {
                     // TODO room for improvement, static URL vs relative URL
                     cloudDevice : {
                         shape : 'image',
-                        image : "../../static/images/cloud.png"
+                        image : iconsPath + 'cloud.png',
+                        size: 50,
                     },
                     routerDevice : {
                         shape : 'image',
-                        image : "../../static/images/router.png"
+                        image : iconsPath + 'router.png',
+                        size: 45,
                     },
                     switchDevice : {
                         shape : 'image',
-                        image : "../../static/images/switch.png"
+                        image : iconsPath + 'switch.png',
+                        size: 35,
                     },
                     pcDevice : {
                         shape : 'image',
-                        image : "../../static/images/PC.png"
+                        image : iconsPath + 'PC.png',
+                        size: 45,
                     }
                 },
-                onAdd: function(data, callback) {
-                    deviceCreationDialog.create(data.x, data.y);
-                },
-                onConnect: function(data, callback) {
-                    linkDialog.create(data.from, data.to);
-                },
-                onEdit: function(data, callback) {
-                    deviceModificationDialog.create(data.id);
-                },
-                onDelete: function(data, callback) {
-                    if (data.nodes.length>0) {
-                        packetTracer.removeDevice(data.nodes[0]);
-                    } else if (data.edges.length>0) {
-                        var edgeId = data.edges[0]; // Var created just to enhance readability
-                        packetTracer.removeLink( edges.get(edgeId).url );
-                    }
-                    // This callback is important, otherwise it received 3 consecutive onDelete events.
-                    callback(data);
+                manipulation: {
+                    initiallyActive: true,
+                    addNode: function(data, callback) {
+                                deviceCreationDialog.create(data.x, data.y);
+                             },
+                    addEdge: function(data, callback) {
+                                linkDialog.create(data.from, data.to);
+                             },
+                    editNode: function(data, callback) {
+                                deviceModificationDialog.create(data.id);
+                              },
+                    editEdge: false,
+                    deleteNode: function(data, callback) {
+                                    // Always (data.nodes.length>0) && (data.edges.length==0)
+                                    // FIXME There might be more than a node selected...
+                                    packetTracer.removeDevice(data.nodes[0]);
+                                    // This callback is important, otherwise it received 3 consecutive onDelete events.
+                                    callback(data);
+                                },
+                    deleteEdge: function(data, callback) {
+                                    // Always (data.nodes.length==0) && (data.edges.length>0)
+                                    // FIXME There might be more than an edge selected...
+                                    var edgeId = data.edges[0]; // Var created just to enhance readability
+                                    packetTracer.removeLink( edges.get(edgeId).url );
+                                    // This callback is important, otherwise it received 3 consecutive onDelete events.
+                                    callback(data);
+                                },
                 }
             };
+
             var container = $('#network').get(0);
             network = new vis.Network(container, visData, options);
             network.on('doubleClick', commandLine.open);
@@ -592,34 +606,13 @@ var networkMap = (function () {
     }
 
     /**
-     * Canvas' (0,0) does not correspond with the network map's (0,0) position.
-     *   @arg x X coordinate relative to the canvas element.
-     *   @arg y Y coordinate relative to the canvas element.
-     *   @return Two element array of the coordinates relative to the network map.
+     * Canvas' (0,0) does not correspond with the network map's DOM (0,0) position.
+     *   @arg x DOM X coordinate relative to the canvas element.
+     *   @arg y DOM Y coordinate relative to the canvas element.
+     *   @return Coordinates on the canvas with form {x:Number, y:Number}.
      */
     function toNetworkMapCoordinate(x, y) {
-        var canvasElement = $('#network');
-        var htmlElement = {
-            topLeft: [canvasElement.offset().left, canvasElement.offset().top],
-            width: canvasElement.width(),
-            height: canvasElement.height()
-        };
-
-        var relativePercentPosition = [];
-        relativePercentPosition[0] = (x - htmlElement.topLeft[0]) / htmlElement.width;
-        relativePercentPosition[1] = (y - htmlElement.topLeft[1]) / htmlElement.height;
-
-        // FIXME what if network does not exist yet?
-        var canvas = {
-            width: network.canvasBottomRight.x - network.canvasTopLeft.x,
-            height: network.canvasBottomRight.y - network.canvasTopLeft.y
-        };
-
-        var ret = [];
-        ret[0] = relativePercentPosition[0] * canvas.width + network.canvasTopLeft.x;
-        ret[1] = relativePercentPosition[1] * canvas.height + network.canvasTopLeft.y;
-
-        return ret;
+        return network.DOMtoCanvas({x: x, y: y});
     }
 
     /**
@@ -668,8 +661,8 @@ var DraggableDevice = function(el, canvasEl, deviceType) {
                                 // We don't use the return
                                 packetTracer.addDevice({
                                     "group": deviceType,
-                                    "x": position[0],
-                                    "y": position[1]
+                                    "x": position.x,
+                                    "y": position.y
                                 }, callback);
                             };
     this.init();

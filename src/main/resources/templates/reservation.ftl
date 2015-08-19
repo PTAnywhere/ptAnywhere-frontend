@@ -2,14 +2,9 @@
 <html>
 <head>
     <title>Reserve instance</title>
-
     <link rel="icon" type="image/png" href="${base}/images/icon.png">
 
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.min.css">
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.structure.min.css">
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.theme.min.css">
-    <script src="${base}/libs/jquery/jquery.js"></script>
-    <script src="${base}/libs/jquery/jquery-ui.min.js"></script>
+    <#include "headers/jquery.ftl">
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
     <script>

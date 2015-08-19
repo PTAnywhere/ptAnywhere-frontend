@@ -2,18 +2,10 @@
 <html>
 <head>
     <title>${title}</title>
-
     <link rel="icon" type="image/png" href="${base}/images/icon.png">
 
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.min.css">
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.structure.min.css">
-    <link rel="stylesheet" href="${base}/libs/jquery/jquery-ui.theme.min.css">
-    <script src="${base}/libs/jquery/jquery.js"></script>
-    <script src="${base}/libs/jquery/jquery-ui.min.js"></script>
-    <script src="${base}/libs/jquery/jquery.ui.touch-punch.min.js"></script>
-
-    <link href="${base}/libs/vis/vis.css" rel="stylesheet" type="text/css"/>
-    <script type="text/javascript" src="${base}/libs/vis/vis.js"></script>
+    <#include "headers/jquery.ftl">
+    <#include "headers/visjs.ftl">
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
     <script type="text/javascript" src="${base}/js/widget.js"></script>

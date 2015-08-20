@@ -41,7 +41,7 @@
 </div>
 <div class="view">
     <div class="message">
-        <p>Start using the widget by reserving a PacketTracer instance!</p>
+        <p>Start using the widget by reserving a <span style="font-style: italic;">Packet Tracer</span> instance!</p>
         <button style="margin-top: 4%;">Reserve</button>
     </div>
 </div>
@@ -54,7 +54,7 @@
 </div>
 <div id="dialog-message" title="Unavailable PT instances" style="display: none;">
   <p>
-    Sorry, there are <b>no PacketTracer instances available</b> right now to initiate a session.
+    Sorry, there are <b>no Packet Tracer instances available</b> right now to initiate a session.
   </p>
   <p>
     Please, wait a little bit and <b>try again</b>.

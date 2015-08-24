@@ -45,6 +45,10 @@ var packetTracer = (function () {
 
     // Private utility functions
 
+    function showSessionExpiredError() {
+        $(".view").html($("#notFound").html());
+    }
+
     function requestJSON(verb, url, data, callback) {
         return $.ajax({
             headers: {
@@ -55,17 +59,20 @@ var packetTracer = (function () {
             url: url,
             data: JSON.stringify(data),
             dataType: 'json',
-            success: callback
+            success: callback,
+            statusCode: {
+                410: showSessionExpiredError
+            }
         });
-    };
+    }
 
     function postJSON(url, data, callback) {
         return requestJSON('POST', url, data, callback);
-    };
+    }
 
     function putJSON(url, data, callback) {
         return requestJSON('PUT', url, data, callback);
-    };
+    }
 
     function deleteHttp(url, callback) {
         return $.ajax({
@@ -73,7 +80,7 @@ var packetTracer = (function () {
             url: url,
             success: callback
         });
-    };
+    }
 
     // Publicly exposed functions which call API resources
 
@@ -91,9 +98,8 @@ var packetTracer = (function () {
             retryLimit : maxRetries,
             timeout: 2000,
             statusCode: {
-                404: function() {
-                    $(".view").html($("#notFound").html());
-                },
+                404: showSessionExpiredError,
+                410: showSessionExpiredError,
                 503: function() {
                     this.tryCount++;
                     if (this.tryCount <= this.retryLimit) {
@@ -123,8 +129,9 @@ var packetTracer = (function () {
             function(data) {
                 console.log("The device was created successfully.");
                 nodes.add(data);
-            }).done(callback)
-            .fail(function(data) { console.error("Something went wrong in the device creation."); });
+            })
+            .fail(function(data) { console.error("Something went wrong in the device creation."); })
+            .always(callback);
     }
 
     function deleteDevice(deviceId) {
@@ -145,8 +152,9 @@ var packetTracer = (function () {
                 console.log("The device has been modified successfully.");
                 result.defaultGateway = defaultGateway;  // FIXME PTPIC library!
                 nodes.update(result);  // As the device has the same id, it should replace the older one.
-        }).done(callback)
-        .fail(function(data) { console.error("Something went wrong in the device modification."); });
+        })
+        .fail(function(data) { console.error("Something went wrong in the device modification."); })
+        .always(callback);
     }
 
     function putPort(portURL, ipAddress, subnetMask, callback) {
@@ -158,8 +166,9 @@ var packetTracer = (function () {
         putJSON(portURL, modification,
             function(result) {
                 console.log("The port has been modified successfully.");
-        }).done(callback)
-        .fail(function(data) { console.error("Something went wrong in the port modification."); });
+        })
+        .fail(function(data) { console.error("Something went wrong in the port modification."); })
+        .always(callback);
     }
 
     function getPorts(deviceUrl, callback) {
@@ -169,8 +178,15 @@ var packetTracer = (function () {
         });
     }
 
-    function getFreePorts(deviceUrl, csuccess, cfail) {
-        $.getJSON(deviceUrl + "ports?free=true", csuccess).fail(cfail);
+    function getFreePorts(deviceUrl, cSuccess, cFail, cSessionExpired) {
+        $.getJSON(deviceUrl + "ports?free=true", cSuccess).fail(function(data) {
+            if (data.status==410) {
+                cSessionExpired();
+                showSessionExpiredError();
+            } else {
+                cFail();
+            }
+        });
     }
 
     function postLink(fromPortURL, toPortURL, doneCallback, successCallback) {
@@ -181,8 +197,9 @@ var packetTracer = (function () {
             function(response) {
                 console.log("The link has been created successfully.");
                 successCallback(response.id, response.url);
-        }).done(doneCallback)
-        .fail(function(data) { console.error("Something went wrong in the link creation."); });
+        })
+        .fail(function(data) { console.error("Something went wrong in the link creation."); })
+        .always(callback);
     }
 
     function deleteLink(linkUrl) {
@@ -215,9 +232,9 @@ var packetTracer = (function () {
 var linkDialog = (function () {
     var fromDevice, toDevice;
 
-    function loadAvailablePorts(linkForm, bothLoadedSuccess, bothLoadedFail) {
+    function loadAvailablePorts(linkForm, bothLoadedSuccess, bothLoadedFail, sessionExpired) {
         oneLoaded = false; // It must be global for the magic to happen ;)
-        afterLoadingSuccess = function(selectPortsEl, ports) {
+        var  afterLoadingSuccess = function(selectPortsEl, ports) {
             // TODO Right now it returns a null, but it would be much logical to return an empty array.
             if (ports==null || ports.length==0) {
                 bothLoadedFail("One of the devices you are trying to link has no available interfaces.");
@@ -231,16 +248,16 @@ var linkDialog = (function () {
             }
         }
         // FIXME deviceId?
-        afterLoadingError = function(data) {
+        var afterLoadingError = function(data) {
             console.error("Something went wrong getting this devices' available ports " + deviceId + ".")
             bothLoadedFail("Unable to get " + deviceId + " device's ports.");
         }
         packetTracer.getAvailablePorts(fromDevice.url, function(ports) {
                                                         afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
-                                                     }, afterLoadingError);
+                                                     }, afterLoadingError, sessionExpired);
         packetTracer.getAvailablePorts(toDevice.url, function(ports) {
                                                       afterLoadingSuccess($("#linkToInterface", linkForm), ports);
-                                                   }, afterLoadingError);
+                                                   }, afterLoadingError, sessionExpired);
     }
 
     function showPanel(classToShow) {
@@ -302,6 +319,9 @@ var linkDialog = (function () {
                 // TODO find a less error-prone way to refer to the SUBMIT button (not its ordinal position!).
                 $("button:first", dialog).attr('disabled','disabled');  // Disables the submit button
                 showPanel("error");
+            },
+            function() {
+                dialog.dialog( "close" );
             });
     }
 

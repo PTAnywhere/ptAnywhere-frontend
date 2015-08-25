@@ -8,6 +8,7 @@
     <#include "headers/visjs.ftl">
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="${base}/js/libPTAnywhere.js"></script>
     <script type="text/javascript" src="${base}/js/widget.js"></script>
     <script>
         api_url = "${session_api}";

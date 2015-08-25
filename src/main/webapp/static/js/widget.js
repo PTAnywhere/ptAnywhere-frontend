@@ -36,203 +36,6 @@ function getURLParameter(sParam) {
 }
 
 
-
-// http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript
-/**
- * Client for PacketTracer's HTTP API.
- */
-var packetTracer = (function () {
-
-    // Private utility functions
-
-    function showSessionExpiredError() {
-        $(".view").html($("#notFound").html());
-    }
-
-    function requestJSON(verb, url, data, callback) {
-        return $.ajax({
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            type: verb,
-            url: url,
-            data: (data!=null)? JSON.stringify(data): null,
-            dataType: 'json',
-            timeout: 2000,
-            success: callback,
-            statusCode: {
-                410: showSessionExpiredError
-            }
-        });
-    }
-
-    function getJSON(url, callback) {
-        return requestJSON('GET', url, null, callback);
-    }
-
-    function postJSON(url, data, callback) {
-        return requestJSON('POST', url, data, callback);
-    }
-
-    function putJSON(url, data, callback) {
-        return requestJSON('PUT', url, data, callback);
-    }
-
-    function deleteHttp(url, callback) {
-        return $.ajax({
-            type: 'DELETE',
-            url: url,
-            success: callback
-        });
-    }
-
-    // Publicly exposed functions which call API resources
-
-    /**
-     * @arg callback If it is null, it is simply ignored.
-     */
-    function getTopology(callback) {
-        var maxRetries = 5;
-        $.ajax({
-            url: api_url + "/network",
-            type : 'GET',
-            dataType: 'json',
-            success: callback,
-            tryCount : 0,
-            retryLimit : maxRetries,
-            timeout: 2000,
-            statusCode: {
-                404: showSessionExpiredError,
-                410: showSessionExpiredError,
-                503: function() {
-                    this.tryCount++;
-                    if (this.tryCount <= this.retryLimit) {
-                        $("#loadingMessage").text("Instance not yet available. Attempt " + this.tryCount + "/" + maxRetries + ".");
-                        var thisAjax = this;
-                        setTimeout(function() { $.ajax(thisAjax); }, 2000);  // retry
-                    }
-                },
-            },
-            error : function(xhr, textStatus, errorThrown ) {
-                if (textStatus == 'timeout') {
-                    this.tryCount++;
-                    console.error("The topology could not be loaded: timeout.");
-                    if (this.tryCount <= this.retryLimit) {
-                        $("#loadingMessage").text("Timeout. Attempt " + this.tryCount + "/" + maxRetries + ".");
-                        $.ajax(this); //try again
-                    }
-                } else {
-                    console.error("The topology could not be loaded: " + errorThrown + ".");
-                }
-            }
-        });
-    }
-
-    function postDevice(newDevice, callback) {
-        postJSON( api_url + "/devices", newDevice,
-            function(data) {
-                console.log("The device was created successfully.");
-                nodes.add(data);
-            })
-            .fail(function(data) { console.error("Something went wrong in the device creation."); })
-            .always(callback);
-    }
-
-    function deleteDevice(deviceId) {
-        deleteHttp(nodes.get(deviceId).url,
-            function(result) {
-                console.log("The device has been deleted successfully.");
-            }).fail(function(data) { console.error("Something went wrong in the device removal."); });
-    }
-
-    function putDevice(deviceId, deviceLabel, defaultGateway, callback) { // modify
-        // General settings: PUT to /devices/id
-        var modification = { label: deviceLabel };
-        if (defaultGateway!="") {
-            modification.defaultGateway = defaultGateway;
-        }
-        putJSON(nodes.get(deviceId).url, modification,
-            function(result) {
-                console.log("The device has been modified successfully.");
-                result.defaultGateway = defaultGateway;  // FIXME PTPIC library!
-                nodes.update(result);  // As the device has the same id, it should replace the older one.
-        })
-        .fail(function(data) { console.error("Something went wrong in the device modification."); })
-        .always(callback);
-    }
-
-    function putPort(portURL, ipAddress, subnetMask, callback) {
-        // Send new IP settings
-        var modification = {
-            portIpAddress: ipAddress,
-            portSubnetMask: subnetMask
-        };
-        putJSON(portURL, modification,
-            function(result) {
-                console.log("The port has been modified successfully.");
-        })
-        .fail(function(data) { console.error("Something went wrong in the port modification."); })
-        .always(callback);
-    }
-
-    function getPorts(deviceUrl, callback) {
-        getJSON(deviceUrl + "ports", callback)
-        .fail(function() {
-            console.error("Ports for the device " + node + " could not be loaded. Possible timeout.");
-        });
-    }
-
-    function getFreePorts(deviceUrl, cSuccess, cFail, cSessionExpired) {
-        getJSON(deviceUrl + "ports?free=true", cSuccess).fail(function(data) {
-            if (data.status==410) {
-                cSessionExpired();
-            } else {
-                cFail();
-            }
-        });
-    }
-
-    function postLink(fromPortURL, toPortURL, doneCallback, successCallback) {
-        var modification = {
-            toPort: toPortURL
-        }
-        postJSON(fromPortURL + "link", modification,
-            function(response) {
-                console.log("The link has been created successfully.");
-                successCallback(response.id, response.url);
-        })
-        .fail(function(data) { console.error("Something went wrong in the link creation."); })
-        .always(callback);
-    }
-
-    function deleteLink(linkUrl) {
-        getJSON(linkUrl,
-            function(data) {
-                deleteHttp(data.endpoints[0] + "link",
-                    function(result) {
-                        console.log("The link has been deleted successfully.");
-                    }
-                ).fail(function(data) { console.error("Something went wrong in the link removal."); });
-            }
-        ).fail(function(data) { console.error("Something went wrong getting this link " + edgeId + "."); });
-    }
-
-    return {
-        getNetwork: getTopology,
-        addDevice: postDevice,
-        removeDevice: deleteDevice,
-        modifyDevice: putDevice,
-        modifyPort: putPort,
-        getAllPorts: getPorts,
-        getAvailablePorts: getFreePorts,
-        createLink: postLink,
-        removeLink: deleteLink,
-    };
-
-})();
-
-
 var linkDialog = (function () {
 
     var dialogContentPanelId = "#link-devices";
@@ -283,16 +86,16 @@ var linkDialog = (function () {
             console.error("Something went wrong getting this devices' available ports " + device.id + ".")
             showErrorInPanel("Unable to get " + device.label + " device's ports.");
         };
-        packetTracer.getAvailablePorts(fromDevice.url, function(ports) {
-                                                            afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
-                                                       }, function(errorData) {
-                                                            afterLoadingError(fromDevice, errorData);
-                                                       }, closeDialog);
-        packetTracer.getAvailablePorts(toDevice.url, function(ports) {
-                                                        afterLoadingSuccess($("#linkToInterface", linkForm), ports);
-                                                     }, function(errorData) {
-                                                        afterLoadingError(toDevice, errorData);
-                                                     }, closeDialog);
+        packetTracer.getAvailablePorts(fromDevice, function(ports) {
+                                                        afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
+                                                   }, function(errorData) {
+                                                        afterLoadingError(fromDevice, errorData);
+                                                   }, closeDialog);
+        packetTracer.getAvailablePorts(toDevice, function(ports) {
+                                                    afterLoadingSuccess($("#linkToInterface", linkForm), ports);
+                                                 }, function(errorData) {
+                                                    afterLoadingError(toDevice, errorData);
+                                                 }, closeDialog);
     }
 
     function init() {
@@ -352,7 +155,8 @@ var deviceCreationDialog = (function () {
             "group": type,
             "x": x,
             "y": y
-        }, callback);
+        }, function(data) { nodes.add(data); })
+        .always(callback);
     }
 
     function createDialog(x, y) {
@@ -444,7 +248,7 @@ var deviceModificationDialog = (function () {
             $("#defaultGw", modForm).hide();
         }
 
-        packetTracer.getAllPorts(selectedDevice.url, loadPortsForInterface);
+        packetTracer.getAllPorts(selectedDevice, loadPortsForInterface);
     }
 
     function handleModificationSubmit(callback) {
@@ -454,7 +258,9 @@ var deviceModificationDialog = (function () {
             var deviceId = $("input[name='deviceId']", modForm).val();
             var deviceLabel = $("input[name='displayName']", modForm).val();
             var defaultGateway = $("input[name='defaultGateway']", modForm).val();
-            packetTracer.modifyDevice(deviceId, deviceLabel, defaultGateway, callback);
+            packetTracer.modifyDevice(nodes.get(deviceId), deviceLabel, defaultGateway, function(result) {
+                                            nodes.update(result);
+                                        }).always(callback);
         } else if (selectedTab=="tabs-2") { // Interfaces
             var portURL = $("#interface", modForm).val();
             var portIpAddress = $("input[name='ipAddress']", modForm).val();
@@ -607,12 +413,13 @@ var networkMap = (function () {
                              },
                     editNode: function(data, callback) {
                                 deviceModificationDialog.create(data.id);
+                                callback(data);
                               },
                     editEdge: false,
                     deleteNode: function(data, callback) {
                                     // Always (data.nodes.length>0) && (data.edges.length==0)
                                     // FIXME There might be more than a node selected...
-                                    packetTracer.removeDevice(data.nodes[0]);
+                                    packetTracer.removeDevice(nodes.get(data.nodes[0]));
                                     // This callback is important, otherwise it received 3 consecutive onDelete events.
                                     callback(data);
                                 },

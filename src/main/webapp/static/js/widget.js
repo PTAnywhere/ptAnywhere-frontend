@@ -1,4 +1,5 @@
 var nodes, edges;
+var ptClient;
 
 
 // Utility functions that are transversal to the modules defined.
@@ -86,12 +87,12 @@ var linkDialog = (function () {
             console.error("Something went wrong getting this devices' available ports " + device.id + ".")
             showErrorInPanel("Unable to get " + device.label + " device's ports.");
         };
-        packetTracer.getAvailablePorts(fromDevice, function(ports) {
+        ptClient.getAvailablePorts(fromDevice, function(ports) {
                                                         afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
                                                    }, function(errorData) {
                                                         afterLoadingError(fromDevice, errorData);
                                                    }, closeDialog);
-        packetTracer.getAvailablePorts(toDevice, function(ports) {
+        ptClient.getAvailablePorts(toDevice, function(ports) {
                                                     afterLoadingSuccess($("#linkToInterface", linkForm), ports);
                                                  }, function(errorData) {
                                                     afterLoadingError(toDevice, errorData);
@@ -122,7 +123,7 @@ var linkDialog = (function () {
                     };
                     var fromPortURL = $("#linkFromInterface option:selected", linkForm).val();
                     var toPortURL = $("#linkToInterface option:selected", linkForm).val();
-                    packetTracer.createLink(fromPortURL, toPortURL, doneCallback, successfulCreationCallback);
+                    ptClient.createLink(fromPortURL, toPortURL, doneCallback, successfulCreationCallback);
                 },
                 Cancel: function() {
                     $(this).dialog( "close" );
@@ -150,7 +151,7 @@ var linkDialog = (function () {
 
 var deviceCreationDialog = (function () {
     function addDeviceWithName(label, type, x, y, callback) {
-        return packetTracer.addDevice({
+        return ptClient.addDevice({
             "label": label,
             "group": type,
             "x": x,
@@ -248,7 +249,7 @@ var deviceModificationDialog = (function () {
             $("#defaultGw", modForm).hide();
         }
 
-        packetTracer.getAllPorts(selectedDevice, loadPortsForInterface);
+        ptClient.getAllPorts(selectedDevice, loadPortsForInterface);
     }
 
     function handleModificationSubmit(callback) {
@@ -258,7 +259,7 @@ var deviceModificationDialog = (function () {
             var deviceId = $("input[name='deviceId']", modForm).val();
             var deviceLabel = $("input[name='displayName']", modForm).val();
             var defaultGateway = $("input[name='defaultGateway']", modForm).val();
-            packetTracer.modifyDevice(nodes.get(deviceId), deviceLabel, defaultGateway, function(result) {
+            ptClient.modifyDevice(nodes.get(deviceId), deviceLabel, defaultGateway, function(result) {
                                             nodes.update(result);
                                         }).always(callback);
         } else if (selectedTab=="tabs-2") { // Interfaces
@@ -266,7 +267,7 @@ var deviceModificationDialog = (function () {
             var portIpAddress = $("input[name='ipAddress']", modForm).val();
             var portSubnetMask = $("input[name='subnetMask']", modForm).val();
             // Room for improvement: the following request could be avoided when nothing has changed
-            packetTracer.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
+            ptClient.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
         } else {
             console.error("ERROR. Selected tab unknown.");
         }
@@ -419,7 +420,7 @@ var networkMap = (function () {
                     deleteNode: function(data, callback) {
                                     // Always (data.nodes.length>0) && (data.edges.length==0)
                                     // FIXME There might be more than a node selected...
-                                    packetTracer.removeDevice(nodes.get(data.nodes[0]));
+                                    ptClient.removeDevice(nodes.get(data.nodes[0]));
                                     // This callback is important, otherwise it received 3 consecutive onDelete events.
                                     callback(data);
                                 },
@@ -427,7 +428,7 @@ var networkMap = (function () {
                                     // Always (data.nodes.length==0) && (data.edges.length>0)
                                     // FIXME There might be more than an edge selected...
                                     var edgeId = data.edges[0]; // Var created just to enhance readability
-                                    packetTracer.removeLink( edges.get(edgeId).url );
+                                    ptClient.removeLink( edges.get(edgeId).url );
                                     // This callback is important, otherwise it received 3 consecutive onDelete events.
                                     callback(data);
                                 },
@@ -455,7 +456,7 @@ var networkMap = (function () {
      */
     function loadTopology(callback) {
         var draw = drawTopology;
-        packetTracer.getNetwork(function(data) {
+        ptClient.getNetwork(function(data) {
             draw(data);
             if (callback!=null)
                 callback();
@@ -494,7 +495,7 @@ var DraggableDevice = function(el, canvasEl, deviceType) {
                                 var y = elementOffset.top;
                                 var position = networkMap.getCoordinate(x, y);
                                 // We don't use the return
-                                packetTracer.addDevice({
+                                ptClient.addDevice({
                                     "group": deviceType,
                                     "x": position.x,
                                     "y": position.y
@@ -555,9 +556,10 @@ DraggableDevice.prototype.init = function() {
                 warning.css({'position': 'absolute',
                              'left': ui.offset.left,
                              'top': ui.offset.top});
-                originalObj.creationCallback(ui.offset, function() {
+                originalObj.creationCallback(ui.offset, function(data) {
                     originalObj.moveToStartingPosition();
                     warning.remove();
+                    nodes.add(data);
                 });
             } else {
                 originalObj.moveToStartingPosition();
@@ -605,5 +607,6 @@ $(function() {
     var draggableSwitch = new DraggableDevice($("#switch"), networkCanvas, "switch");
     var draggablePc = new DraggableDevice($("#pc"), networkCanvas, "pc");
 
+    ptClient = new packetTracer.Client(api_url, function() { $(".view").html($("#notFound").html()); } );
     networkMap.load();
 });

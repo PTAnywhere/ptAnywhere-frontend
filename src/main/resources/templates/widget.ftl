@@ -12,6 +12,16 @@
     <script type="text/javascript" src="${base}/js/widget.js"></script>
     <script>
         api_url = "${session_api}";
+        $(function() {
+            // Global, better if it is passed by parameter to widget creator...
+            var ptClient = new packetTracer.Client(api_url, function() { $(".view").html($("#notFound").html()); } );
+            var widget = ptAnywhere.createWidget("#widget", ptClient, {});
+            var networkCanvas = $("#network");
+            var draggableCloud = new ptAnywhere.DraggableDevice($("#cloud"), networkCanvas, "cloud");
+            var draggableRouter = new ptAnywhere.DraggableDevice($("#router"), networkCanvas, "router");
+            var draggableSwitch = new ptAnywhere.DraggableDevice($("#switch"), networkCanvas, "switch");
+            var draggablePc = new ptAnywhere.DraggableDevice($("#pc"), networkCanvas, "pc");
+        });
     </script>
 </head>
 
@@ -21,6 +31,9 @@
         <img src="${base}/images/PTAnywhere-logo.png" alt="PacketTracer icon" >
         ${title}
     </h2>
+</div>
+<div id="widget">
+
 </div>
 <div class="view">
     <div id="network">
@@ -138,9 +151,6 @@
             <p class="error-msg"></p>
         </div>
     </form>
-</div>
-<div id="command-line" title="Command line">
-    <div id="replace"></div>
 </div>
 <div id="notFound" style="display: none;">
     <div class="message">

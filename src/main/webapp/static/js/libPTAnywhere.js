@@ -180,6 +180,7 @@ var packetTracer = (function () {
         }, this.customSettings)
         .fail(function(data) { console.error("Something went wrong getting this link " + edgeId + "."); });
     };
+    /* End PTClient */
 
 
     return {

@@ -57,13 +57,18 @@ var packetTracer = (function () {
             },
             type: verb,
             url: url,
-            data: JSON.stringify(data),
+            data: (data!=null)? JSON.stringify(data): null,
             dataType: 'json',
+            timeout: 2000,
             success: callback,
             statusCode: {
                 410: showSessionExpiredError
             }
         });
+    }
+
+    function getJSON(url, callback) {
+        return requestJSON('GET', url, null, callback);
     }
 
     function postJSON(url, data, callback) {
@@ -172,17 +177,16 @@ var packetTracer = (function () {
     }
 
     function getPorts(deviceUrl, callback) {
-        $.getJSON(deviceUrl + "ports", callback)
+        getJSON(deviceUrl + "ports", callback)
         .fail(function() {
             console.error("Ports for the device " + node + " could not be loaded. Possible timeout.");
         });
     }
 
     function getFreePorts(deviceUrl, cSuccess, cFail, cSessionExpired) {
-        $.getJSON(deviceUrl + "ports?free=true", cSuccess).fail(function(data) {
+        getJSON(deviceUrl + "ports?free=true", cSuccess).fail(function(data) {
             if (data.status==410) {
                 cSessionExpired();
-                showSessionExpiredError();
             } else {
                 cFail();
             }
@@ -203,7 +207,7 @@ var packetTracer = (function () {
     }
 
     function deleteLink(linkUrl) {
-        $.getJSON(linkUrl,
+        getJSON(linkUrl,
             function(data) {
                 deleteHttp(data.endpoints[0] + "link",
                     function(result) {
@@ -230,59 +234,74 @@ var packetTracer = (function () {
 
 
 var linkDialog = (function () {
-    var fromDevice, toDevice;
 
-    function loadAvailablePorts(linkForm, bothLoadedSuccess, bothLoadedFail, sessionExpired) {
-        oneLoaded = false; // It must be global for the magic to happen ;)
-        var  afterLoadingSuccess = function(selectPortsEl, ports) {
-            // TODO Right now it returns a null, but it would be much logical to return an empty array.
-            if (ports==null || ports.length==0) {
-                bothLoadedFail("One of the devices you are trying to link has no available interfaces.");
-            } else {
-                loadPortsInSelect(ports, selectPortsEl, null);
-                if (oneLoaded) { // Check race conditions!
-                    bothLoadedSuccess();
-                } else {
-                    oneLoaded = true;
-                }
-            }
-        }
-        // FIXME deviceId?
-        var afterLoadingError = function(data) {
-            console.error("Something went wrong getting this devices' available ports " + deviceId + ".")
-            bothLoadedFail("Unable to get " + deviceId + " device's ports.");
-        }
-        packetTracer.getAvailablePorts(fromDevice.url, function(ports) {
-                                                        afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
-                                                     }, afterLoadingError, sessionExpired);
-        packetTracer.getAvailablePorts(toDevice.url, function(ports) {
-                                                      afterLoadingSuccess($("#linkToInterface", linkForm), ports);
-                                                   }, afterLoadingError, sessionExpired);
-    }
+    var dialogContentPanelId = "#link-devices";
+    var fromDevice, toDevice;
+    var linkForm;  // To make more specific selects
+    var dialog;
+    var oneLoaded;
 
     function showPanel(classToShow) {
         var classNames = ["loading", "loaded", "error"];
         for (i in classNames) {
             if (classNames[i]==classToShow) {
-                $("#link-devices ." + classNames[i]).show();
+                $(dialogContentPanelId + " ." + classNames[i]).show();
             } else {
-                $("#link-devices ." + classNames[i]).hide();
+                $(dialogContentPanelId + " ." + classNames[i]).hide();
             }
         }
+    }
+
+    function showErrorInPanel(errorMessage) {
+        $(".error .error-msg", linkForm).text(errorMessage);
+        // TODO find a less error-prone way to refer to the SUBMIT button (not its ordinal position!).
+        $("button:first", dialog).attr('disabled','disabled');  // Disables the submit button
+        showPanel("error");
+    }
+
+    function closeDialog() {
+        dialog.dialog( "close" );
+    }
+
+    function loadAvailablePorts() {
+        oneLoaded = false;
+        var afterLoadingSuccess = function(selectPortsEl, ports) {
+            // TODO Right now it returns a null, but it would be much logical to return an empty array.
+            if (ports==null || ports.length==0) {
+                showErrorInPanel("One of the devices you are trying to link has no available interfaces.");
+            } else {
+                loadPortsInSelect(ports, selectPortsEl, null);
+                if (oneLoaded) { // TODO Check race conditions!
+                    // Success: both loaded!
+                    showPanel("loaded");
+                } else {
+                    oneLoaded = true;
+                }
+            }
+        };
+        var afterLoadingError = function(device, data) {
+            console.error("Something went wrong getting this devices' available ports " + device.id + ".")
+            showErrorInPanel("Unable to get " + device.label + " device's ports.");
+        };
+        packetTracer.getAvailablePorts(fromDevice.url, function(ports) {
+                                                            afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
+                                                       }, function(errorData) {
+                                                            afterLoadingError(fromDevice, errorData);
+                                                       }, closeDialog);
+        packetTracer.getAvailablePorts(toDevice.url, function(ports) {
+                                                        afterLoadingSuccess($("#linkToInterface", linkForm), ports);
+                                                     }, function(errorData) {
+                                                        afterLoadingError(toDevice, errorData);
+                                                     }, closeDialog);
     }
 
     function init() {
         showPanel("loading");
 
-        var linkForm = $("form[name='link-devices']");
-        // Not needed
-        /*$("input[name='toDeviceId']", linkForm).val(toDeviceId);
-        $("input[name='fromDeviceId']", linkForm).val(fromDeviceId);*/
         $("#fromDeviceName", linkForm).text(fromDevice.label);
         $("#toDeviceName", linkForm).text(toDevice.label);
 
-
-        var dialog = $("#link-devices").dialog({
+        dialog = $(dialogContentPanelId).dialog({
             title: "Connect two devices",
             autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
             buttons: {
@@ -298,36 +317,25 @@ var linkDialog = (function () {
                             to: toDevice.id,
                         }]);
                     };
-                    //var fromPortName = $("#linkFromInterface option:selected", linkForm).text().replace("/", "%20");
-                    //var toPortName = $("#linkToInterface option:selected", linkForm).text();
                     var fromPortURL = $("#linkFromInterface option:selected", linkForm).val();
                     var toPortURL = $("#linkToInterface option:selected", linkForm).val();
                     packetTracer.createLink(fromPortURL, toPortURL, doneCallback, successfulCreationCallback);
                 },
                 Cancel: function() {
-                    $( this ).dialog( "close" );
+                    $(this).dialog( "close" );
                 }
-            }, close: function() { /*console.log("Closing dialog...");*/ }
+            }
          });
         var form = dialog.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
         dialog.dialog( "open" );
-
-        loadAvailablePorts(linkForm,
-            function() { showPanel("loaded"); },
-            function(errorMessage) {
-                $(".error .error-msg", linkForm).text(errorMessage);
-                // TODO find a less error-prone way to refer to the SUBMIT button (not its ordinal position!).
-                $("button:first", dialog).attr('disabled','disabled');  // Disables the submit button
-                showPanel("error");
-            },
-            function() {
-                dialog.dialog( "close" );
-            });
+        loadAvailablePorts();
     }
 
-    function createDialog(fromDeviceId, toDeviceId) {
+    function createDialog(elementId, fromDeviceId, toDeviceId) {
+        dialogContentPanelId = elementId;
         fromDevice = nodes.get(fromDeviceId);
         toDevice = nodes.get(toDeviceId);
+        linkForm = $("form[name='link-devices']");
         init();
     }
 
@@ -595,7 +603,7 @@ var networkMap = (function () {
                                 deviceCreationDialog.create(data.x, data.y);
                              },
                     addEdge: function(data, callback) {
-                                linkDialog.create(data.from, data.to);
+                                linkDialog.create("#link-devices", data.from, data.to);
                              },
                     editNode: function(data, callback) {
                                 deviceModificationDialog.create(data.id);

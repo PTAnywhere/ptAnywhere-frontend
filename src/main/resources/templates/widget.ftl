@@ -126,32 +126,6 @@
         </form>
     </div>
 </div>
-<div id="link-devices" title="Link two devices">
-    <form name="link-devices">
-        <input type="hidden" name="fromDeviceId" value="">
-        <input type="hidden" name="toDeviceId" value="">
-        <div class="loading">
-                Loading info...
-        </div>
-        <div class="loaded">
-            <p>Please select which ports to connect...</p>
-            <p><span id="fromDeviceName">Device 1</span>:
-                <select id="linkFromInterface" name="linkFromInterface" size="1">
-                    <option value="loading">Loading...</option>
-                </select>
-            </p>
-            <p><span id="toDeviceName">Device 2</span>:
-                <select id="linkToInterface" name="linkToInterface" size="1">
-                    <option value="loading">Loading...</option>
-                </select>
-            </p>
-        </div>
-        <div class="error">
-            <p>Sorry, something went wrong during the link creation.</p>
-            <p class="error-msg"></p>
-        </div>
-    </form>
-</div>
 <div id="notFound" style="display: none;">
     <div class="message">
         <h1>Topology not found.</h1>

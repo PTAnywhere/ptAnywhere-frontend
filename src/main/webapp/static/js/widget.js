@@ -227,7 +227,8 @@ var ptAnywhere = (function () {
                                     deviceCreationDialog.create(data.x, data.y);
                                  },
                         addEdge: function(data, callback) {
-                                    linkDialog.create("#link-devices", data.from, data.to);
+                                    linkDialog.open(nodes.get(data.from),
+                                                    nodes.get(data.to));
                                  },
                         editNode: function(data, callback) {
                                     deviceModificationDialog.create(data.id);
@@ -301,114 +302,146 @@ var ptAnywhere = (function () {
     // End networkMap module
 
     // Dialog for link creation
-    var linkDialog = (function () {
+    var linkDialog = (function () {  // closure
 
-        var dialogContentPanelId = "#link-devices";
-        var fromDevice, toDevice;
-        var linkForm;  // To make more specific selects
-        var dialog;
-        var oneLoaded;
+        var dialogSelector = null;
+        var fromDevice = null, toDevice = null;
+        var oneLoaded = false;
+
+        function createDOM(parentSelector, dialogId) {
+            var dialogForm = $('<form name="link-devices"></form>');
+            dialogForm.append('<div class="loading">Loading info...</div>');
+            dialogForm.append('<div class="loaded">' +
+                              '  <p>Please select which ports to connect...</p>' +
+                              '  <p><span id="fromDeviceName">Device 1</span>:' +
+                              '    <select id="linkFromInterface" name="linkFromInterface" size="1">' +
+                              '      <option value="loading">Loading...</option>' +
+                              '     </select>' +
+                              '  </p>' +
+                              '  <p><span id="toDeviceName">Device 2</span>:' +
+                              '    <select id="linkToInterface" name="linkToInterface" size="1">' +
+                              '      <option value="loading">Loading...</option>' +
+                              '    </select>' +
+                              '  </p>' +
+                              '</div>');
+            dialogForm.append('<div class="error">' +
+                              '  <p>Sorry, something went wrong during the link creation.</p>' +
+                              '  <p class="error-msg"></p>' +
+                              '</div>');
+            parentSelector.append('<div id="' + dialogId + '" title="Link two devices">' + dialogForm.html() + '</div>');
+        }
 
         function showPanel(classToShow) {
             var classNames = ["loading", "loaded", "error"];
             for (i in classNames) {
                 if (classNames[i]==classToShow) {
-                    $(dialogContentPanelId + " ." + classNames[i]).show();
+                    $(" ." + classNames[i], dialogSelector).show();
                 } else {
-                    $(dialogContentPanelId + " ." + classNames[i]).hide();
+                    $(" ." + classNames[i], dialogSelector).hide();
                 }
             }
         }
 
         function showErrorInPanel(errorMessage) {
-            $(".error .error-msg", linkForm).text(errorMessage);
-            // TODO find a less error-prone way to refer to the SUBMIT button (not its ordinal position!).
-            $("button:first", dialog).attr('disabled','disabled');  // Disables the submit button
+            $(".error .error-msg", dialogSelector).text(errorMessage);
             showPanel("error");
         }
 
-        function closeDialog() {
-            dialog.dialog( "close" );
+        function getReducedOptions() {
+            return { Cancel: close };
+        }
+
+        function getOptions() {
+            return {
+                "SUBMIT": function() {
+                            var successfulCreationCallback = function(edgeId, edgeUrl) {
+                                edges.add([{
+                                    id: edgeId,
+                                    url: edgeUrl,
+                                    from: fromDevice.id,
+                                    to: toDevice.id,
+                                }]);
+                            };
+                            var fromPortURL = $("#linkFromInterface option:selected", dialogSelector).val();
+                            var toPortURL = $("#linkToInterface option:selected", dialogSelector).val();
+                            ptAnywhere.client.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
+                        },
+                Cancel: close
+            };
+        }
+
+        function afterLoadingSuccess(ports, isFrom) {
+            // TODO Right now it returns a null, but it would be much logical to return an empty array.
+            if (ports==null || ports.length==0) {
+                showErrorInPanel("One of the devices you are trying to link has no available interfaces.");
+            } else {
+                var selectPortsEl = $((isFrom)? "#linkFromInterface": "#linkToInterface", dialogSelector);
+                loadPortsInSelect(ports, selectPortsEl, null);
+                if (oneLoaded) { // TODO Check race conditions!
+                    // Success: both loaded!
+                    showPanel("loaded");
+                    dialogSelector.dialog('option', 'buttons', getOptions());
+                } else {
+                    oneLoaded = true;
+                }
+            }
+        }
+
+        function afterLoadingError(device, data) {
+            console.error("Something went wrong getting this devices' available ports " + device.id + ".")
+            showErrorInPanel("Unable to get " + device.label + " device's ports.", dialogSelector);
         }
 
         function loadAvailablePorts() {
             oneLoaded = false;
-            var afterLoadingSuccess = function(selectPortsEl, ports) {
-                // TODO Right now it returns a null, but it would be much logical to return an empty array.
-                if (ports==null || ports.length==0) {
-                    showErrorInPanel("One of the devices you are trying to link has no available interfaces.");
-                } else {
-                    loadPortsInSelect(ports, selectPortsEl, null);
-                    if (oneLoaded) { // TODO Check race conditions!
-                        // Success: both loaded!
-                        showPanel("loaded");
-                    } else {
-                        oneLoaded = true;
-                    }
-                }
-            };
-            var afterLoadingError = function(device, data) {
-                console.error("Something went wrong getting this devices' available ports " + device.id + ".")
-                showErrorInPanel("Unable to get " + device.label + " device's ports.");
-            };
-            ptAnywhere.client.getAvailablePorts(fromDevice, function(ports) {
-                                                        afterLoadingSuccess($("#linkFromInterface", linkForm), ports);
-                                                   }, function(errorData) {
-                                                        afterLoadingError(fromDevice, errorData);
-                                                   }, closeDialog);
-            ptAnywhere.client.getAvailablePorts(toDevice, function(ports) {
-                                                    afterLoadingSuccess($("#linkToInterface", linkForm), ports);
-                                                 }, function(errorData) {
+            ptAnywhere.client.getAvailablePorts(fromDevice,
+                                                function(ports) {
+                                                    afterLoadingSuccess(ports, true);
+                                                },
+                                                function(errorData) {
+                                                    afterLoadingError(fromDevice, errorData);
+                                                },
+                                                close);
+            ptAnywhere.client.getAvailablePorts(toDevice,
+                                                function(ports) {
+                                                    afterLoadingSuccess(ports, false);
+                                                },
+                                                function(errorData) {
                                                     afterLoadingError(toDevice, errorData);
-                                                 }, closeDialog);
+                                                },
+                                                close);
         }
 
-        function init() {
+        function openDialog(fromD, toD) {
+            fromDevice = fromD;
+            toDevice = toD;
             showPanel("loading");
 
-            $("#fromDeviceName", linkForm).text(fromDevice.label);
-            $("#toDeviceName", linkForm).text(toDevice.label);
+            $("#fromDeviceName", dialogSelector).text(fromDevice.label);
+            $("#toDeviceName", dialogSelector).text(toDevice.label);
 
-            dialog = $(dialogContentPanelId).dialog({
+            dialogSelector.dialog({
                 title: "Connect two devices",
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
-                buttons: {
-                    "SUBMIT": function() {
-                        var doneCallback = function() {
-                            dialog.dialog( "close" );
-                        };
-                        var successfulCreationCallback = function(edgeId, edgeUrl) {
-                            edges.add([{
-                                id: edgeId,
-                                url: edgeUrl,
-                                from: fromDevice.id,
-                                to: toDevice.id,
-                            }]);
-                        };
-                        var fromPortURL = $("#linkFromInterface option:selected", linkForm).val();
-                        var toPortURL = $("#linkToInterface option:selected", linkForm).val();
-                        ptAnywhere.client.createLink(fromPortURL, toPortURL, doneCallback, successfulCreationCallback);
-                    },
-                    Cancel: function() {
-                        $(this).dialog( "close" );
-                    }
-                }
+                buttons: getReducedOptions()
              });
-            var form = dialog.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
-            dialog.dialog( "open" );
+            var form = dialogSelector.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
+            dialogSelector.dialog("open");
             loadAvailablePorts();
         }
 
-        function createDialog(elementId, fromDeviceId, toDeviceId) {
-            dialogContentPanelId = elementId;
-            fromDevice = nodes.get(fromDeviceId);
-            toDevice = nodes.get(toDeviceId);
-            linkForm = $("form[name='link-devices']");
-            init();
+        function close() {
+            dialogSelector.dialog("close");
+        }
+
+        function createDialog(parentSelector, dialogId) {
+            createDOM(parentSelector, dialogId);
+            dialogSelector = $("#" + dialogId, parentSelector);
         }
 
         return {
             create: createDialog,
+            open: openDialog,
         };
     })();
     // End linkDialog module
@@ -590,6 +623,9 @@ var ptAnywhere = (function () {
         if (settings.commandLine) {
             commandLine.init(this.widgetSelector);
         }
+        linkDialog.create(this.widgetSelector, "link-devices");
+        //$("#link-devices").hide();
+        this.widgetSelector.hide();
     }
 
     // exposed functions and classes
@@ -644,5 +680,4 @@ $(function() {
     // Better with CSS?
     $("#create-device").hide();
     $("#modify-device").hide();
-    $("#link-devices").hide();
 });

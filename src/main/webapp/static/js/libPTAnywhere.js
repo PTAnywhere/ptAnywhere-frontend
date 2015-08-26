@@ -168,7 +168,7 @@ var packetTracer = (function () {
               successCallback(response.id, response.url);
           }, this.customSettings)
           .fail(function(data) { console.error("Something went wrong in the link creation."); })
-          .always(callback);
+          .done(doneCallback);
     };
 
     PTClient.prototype.removeLink = function(linkUrl) {

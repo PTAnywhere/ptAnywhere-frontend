@@ -49,14 +49,14 @@ div.widget-header img {
     margin-right: 5px;
 }
 
-div.view {
+#widget {
 	width: 100%;
     background-color: #ffffff;
     border-radius: 20px;
     border: 2px solid lightgray;
 }
 
-div.view div.message {
+#widget div.message {
 	width: 60%;
 	margin: 5% auto;
 	text-align: center;

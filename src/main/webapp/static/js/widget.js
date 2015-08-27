@@ -7,7 +7,7 @@ var nodes, edges;
 var ptAnywhere = (function () {
 
     var widgetSelector;
-    var client;  // JS client of the HTTP API
+    var ptClient;  // JS client of the HTTP API
 
 
     // Begin: utility functions
@@ -79,7 +79,7 @@ var ptAnywhere = (function () {
                                     var y = elementOffset.top;
                                     var position = networkMap.getCoordinate(x, y);
                                     // We don't use the return
-                                    ptAnywhere.client.addDevice({
+                                    ptClient.addDevice({
                                         "group": deviceType,
                                         "x": position.x,
                                         "y": position.y
@@ -253,7 +253,7 @@ var ptAnywhere = (function () {
                         deleteNode: function(data, callback) {
                                         // Always (data.nodes.length>0) && (data.edges.length==0)
                                         // FIXME There might be more than a node selected...
-                                        ptAnywhere.client.removeDevice(nodes.get(data.nodes[0]));
+                                        ptClient.removeDevice(nodes.get(data.nodes[0]));
                                         // This callback is important, otherwise it received 3 consecutive onDelete events.
                                         callback(data);
                                     },
@@ -261,7 +261,7 @@ var ptAnywhere = (function () {
                                         // Always (data.nodes.length==0) && (data.edges.length>0)
                                         // FIXME There might be more than an edge selected...
                                         var edgeId = data.edges[0]; // Var created just to enhance readability
-                                        ptAnywhere.client.removeLink( edges.get(edgeId).url );
+                                        ptClient.removeLink( edges.get(edgeId).url );
                                         // This callback is important, otherwise it received 3 consecutive onDelete events.
                                         callback(data);
                                     },
@@ -290,7 +290,7 @@ var ptAnywhere = (function () {
             createTemporaryDOM();
 
             var draw = drawTopology;
-            ptAnywhere.client.getNetwork(function(data) {
+            ptClient.getNetwork(function(data) {
                 draw(data);
                 if (callback!=null)
                     callback();
@@ -395,7 +395,7 @@ var ptAnywhere = (function () {
                             };
                             var fromPortURL = $('.' + clazz.fromInterface + ' option:selected', dialogSelector).val();
                             var toPortURL = $('.' + clazz.toInterface + ' option:selected', dialogSelector).val();
-                            ptAnywhere.client.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
+                            ptClient.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
                         },
                 Cancel: close
             };
@@ -425,7 +425,7 @@ var ptAnywhere = (function () {
 
         function loadAvailablePorts() {
             oneLoaded = false;
-            ptAnywhere.client.getAvailablePorts(fromDevice,
+            ptClient.getAvailablePorts(fromDevice,
                                                 function(ports) {
                                                     afterLoadingSuccess(ports, true);
                                                 },
@@ -433,7 +433,7 @@ var ptAnywhere = (function () {
                                                     afterLoadingError(fromDevice, errorData);
                                                 },
                                                 close);
-            ptAnywhere.client.getAvailablePorts(toDevice,
+            ptClient.getAvailablePorts(toDevice,
                                                 function(ports) {
                                                     afterLoadingSuccess(ports, false);
                                                 },
@@ -517,7 +517,7 @@ var ptAnywhere = (function () {
                 y: y
             };
             if (label!="") newDevice['label'] = label;
-            return ptAnywhere.client.addDevice(newDevice, function(data) { nodes.add(data); })
+            return ptClient.addDevice(newDevice, function(data) { nodes.add(data); })
             .always(callback);
         }
 
@@ -660,7 +660,7 @@ var ptAnywhere = (function () {
                 gwSelector.parent().hide();
             }
 
-            ptAnywhere.client.getAllPorts(selectedDevice, loadPortsForInterface);
+            ptClient.getAllPorts(selectedDevice, loadPortsForInterface);
         }
 
         function handleModificationSubmit(callback) {
@@ -669,7 +669,7 @@ var ptAnywhere = (function () {
             if (selectedTab==html.tab1) { // General settings
                 var deviceLabel = $('input[name="' + html.nameField + '"]', dialogSelector).val();
                 var defaultGateway = $('input[name="' + html.gatewayField + '"]', dialogSelector).val();
-                ptAnywhere.client.modifyDevice(selectedDevice, deviceLabel, defaultGateway, function(result) {
+                ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, function(result) {
                                                 nodes.update(result);
                                             }).always(callback);
             } else if (selectedTab==html.tab2) { // Interfaces
@@ -677,7 +677,7 @@ var ptAnywhere = (function () {
                 var portIpAddress = $('input[name="' + html.ipField + '"]', dialogSelector).val();
                 var portSubnetMask = $('input[name="' + html.subnetField + '"]', dialogSelector).val();
                 // Room for improvement: the following request could be avoided when nothing has changed
-                ptAnywhere.client.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
+                ptClient.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
             } else {
                 console.error("ERROR. Unknown selected tab.");
             }
@@ -725,23 +725,26 @@ var ptAnywhere = (function () {
 
 
     // Widget configurator/initializer
-    function init(selector, ptClient, customSettings) {
-        this.widgetSelector = $(selector);
-        this.client = ptClient;
+    function init(selector, client, customSettings) {
+        widgetSelector = $(selector);
+        ptClient = client;
         var settings = { // Default values
             commandLine: true,
         };
         for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
 
         networkMap.load('network');  // Always loaded
+
+        var hiddenComponentContents = $("<div></div>");
+        hiddenComponentContents.hide();
+        widgetSelector.append(hiddenComponentContents);
+
         if (settings.commandLine) {
-            commandLine.init(this.widgetSelector);
+            commandLine.init(hiddenComponentContents);
         }
-        linkDialog.create(this.widgetSelector, "link-devices");
-        deviceCreationDialog.create(this.widgetSelector, "create-device");
-        deviceModificationDialog.create(this.widgetSelector, "modify-device");
-        // Better with CSS?
-        this.widgetSelector.hide();
+        linkDialog.create(hiddenComponentContents, "link-devices");
+        deviceCreationDialog.create(hiddenComponentContents, "create-device");
+        deviceModificationDialog.create(hiddenComponentContents, "modify-device");
     }
 
     // exposed functions and classes

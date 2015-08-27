@@ -13,10 +13,10 @@
     <script type="text/javascript" src="${base}/js/locale/en.js"></script>
     <script type="text/javascript" src="${base}/js/widget.js"></script>
     <script>
-        api_url = "${session_api}";
+        var api_url = "${session_api}";
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var ptClient = new packetTracer.Client(api_url, function() { $(".view").html($("#notFound").html()); } );
+            var ptClient = new packetTracer.Client(api_url, function() { $("#widget").html($("#notFound").html()); } );
             var widget = ptAnywhere.createWidget("#widget", ptClient, {});
             var networkCanvas = $("#network");
             var draggableCloud = new ptAnywhere.DraggableDevice($("#cloud"), networkCanvas, "cloud");
@@ -35,9 +35,6 @@
     </h2>
 </div>
 <div id="widget">
-
-</div>
-<div class="view">
     <div id="network"></div>
     <fieldset id="creation-fieldset">
         <legend>To create a new device, drag it to the network map</legend>

@@ -39,7 +39,7 @@
         ${title}
     </h2>
 </div>
-<div class="view">
+<div id="widget">
     <div class="message">
         <p>Start using the widget by reserving a <span style="font-style: italic;">Packet Tracer</span> instance!</p>
         <button style="margin-top: 4%;">Reserve</button>

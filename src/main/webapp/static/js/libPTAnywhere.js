@@ -175,7 +175,7 @@ var packetTracer = (function () {
         return getJSON(linkUrl, function(data) {
             deleteHttp(data.endpoints[0] + "link", function(result) {
                 console.log("The link has been deleted successfully.");
-            }, customSettings)
+            }, this.customSettings)
             .fail(function(data) { console.error("Something went wrong in the link removal."); });
         }, this.customSettings)
         .fail(function(data) { console.error("Something went wrong getting this link " + edgeId + "."); });

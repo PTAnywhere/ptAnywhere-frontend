@@ -160,7 +160,7 @@ var ptAnywhere = (function () {
         var html = {  // Literals for classes, identifiers, names or paths
             iconsPath: '../../static/images/',
             cLoadingIcon: 'loading-icon',
-            idLoadingMessage: 'loadingMessage'
+            idLoadingMessage: 'loadingMessage',
         };
 
         // Created the DOM that shorty afterwards will be replaced by the network map
@@ -196,7 +196,7 @@ var ptAnywhere = (function () {
                 // create a network
                 var visData = { nodes : nodes, edges : edges };
                 var options = {
-                    nodes:{
+                    nodes: {
                         physics: false,
                         font: '14px verdana black',
                     },
@@ -209,7 +209,7 @@ var ptAnywhere = (function () {
                             hover: '#000000'
                         }
                      },
-                    groups : {
+                    groups: {
                         // TODO room for improvement, static URL vs relative URL
                         cloudDevice : {
                             shape : 'image',
@@ -263,7 +263,11 @@ var ptAnywhere = (function () {
                                         // This callback is important, otherwise it received 3 consecutive onDelete events.
                                         callback(data);
                                     },
-                    }
+                    },
+                    locale: 'ptAnywhere',
+                    locales: {
+                        ptAnywhere: res.manipulationMenu
+                    },
                 };
                 network = new vis.Network(containerSelector.get(0), visData, options);
                 network.on('doubleClick', function() {
@@ -336,7 +340,7 @@ var ptAnywhere = (function () {
             loading: 'loading',
             loaded: 'loaded',
             error: 'error',
-            error_msg: 'error-msg',
+            errorMsg: 'error-msg',
         }
 
 
@@ -358,7 +362,7 @@ var ptAnywhere = (function () {
                               '</div>');
             dialogForm.append('<div class="' + clazz.error + '">' +
                               '  <p>' + res.linkDialog.error + '</p>' +
-                              '  <p class="' + clazz.error_msg + '"></p>' +
+                              '  <p class="' + clazz.errorMsg + '"></p>' +
                               '</div>');
             parentSelector.append('<div id="' + dialogId + '">' + dialogForm.html() + '</div>');
         }
@@ -375,7 +379,7 @@ var ptAnywhere = (function () {
         }
 
         function showErrorInPanel(errorMessage) {
-            $('.' + clazz.error + ' .' + clazz.error_msg, dialogSelector).text(errorMessage);
+            $('.' + clazz.error + ' .' + clazz.errorMsg, dialogSelector).text(errorMessage);
             showPanel(clazz.error);
         }
 

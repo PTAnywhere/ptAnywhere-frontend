@@ -1,5 +1,3 @@
-var nodes, edges;
-
 
 // Widget creator module and its submodules
 // The Revealing Module Pattern
@@ -44,22 +42,14 @@ var ptAnywhere = (function () {
             parentSelector.append(dialogSelector);
         }
 
-        function getCommandLineURL(nodeId) {
-            return "../console?endpoint="+ nodes.get(nodeId).consoleEndpoint;
-        }
-
-        function openIFrame() {
-            var selected = networkMap.getSelected();
-            if (selected!=null) { // Only if just one is selected
-                var dialog = dialogSelector.dialog({
-                    title: res.commandLineDialog.title,
-                    autoOpen: false, height: 400, width: 600, modal: true, draggable: false,
-                    close: function() { dialog.html(""); }
-                });
-                console.log(getCommandLineURL(selected));
-                dialog.html('<div class="iframeWrapper"><iframe class="terminal" src="' + getCommandLineURL(selected) + '"></iframe></div>');
-                dialog.dialog( "open" );
-            }
+        function openIFrame(node) {
+            var dialog = dialogSelector.dialog({
+                title: res.commandLineDialog.title,
+                autoOpen: false, height: 400, width: 600, modal: true, draggable: false,
+                close: function() { dialog.html(""); }
+            });
+            dialog.html('<div class="iframeWrapper"><iframe class="terminal" src="../console?endpoint=' + node.consoleEndpoint + '"></iframe></div>');
+            dialog.dialog( "open" );
         }
 
         // Reveal public pointers to
@@ -163,6 +153,7 @@ var ptAnywhere = (function () {
 
         //var nodes = null; // To replace in the future with null
         //var edges = null; // To replace in the future with null
+        var nodes, edges;
         var network;
         var containerSelector = null;
 
@@ -244,14 +235,16 @@ var ptAnywhere = (function () {
                     manipulation: {
                         initiallyActive: true,
                         addNode: function(data, callback) {
-                                    deviceCreationDialog.open(data.x, data.y);
+                                    var success = function(newNode) { nodes.add(newNode); };
+                                    deviceCreationDialog.open(data.x, data.y, success);
                                  },
                         addEdge: function(data, callback) {
                                     linkDialog.open(nodes.get(data.from),
                                                     nodes.get(data.to));
                                  },
                         editNode: function(data, callback) {
-                                    deviceModificationDialog.open(nodes.get(data.id));
+                                    var success = function(result) { nodes.update(result); };
+                                    deviceModificationDialog.open(nodes.get(data.id), success);
                                     callback(data);
                                   },
                         editEdge: false,
@@ -273,7 +266,11 @@ var ptAnywhere = (function () {
                     }
                 };
                 network = new vis.Network(containerSelector.get(0), visData, options);
-                network.on('doubleClick', commandLine.open);
+                network.on('doubleClick', function() {
+                    var selected = getSelectedNode();
+                    if (selected!=null)
+                        commandLine.open(selected);
+                });
             }
         }
 
@@ -304,20 +301,19 @@ var ptAnywhere = (function () {
             });
         }
 
-        function getSelection() {
+        function getSelectedNode() {
             var selected = network.getSelection();
             if (selected.nodes.length!=1) { // Only if just one is selected
                 console.log("Only one device is supposed to be selected. Instead " + selected.nodes.length + " are selected.");
                 return null;
             }
-            return selected.nodes[0];
+            return nodes.get(selected.nodes[0]);
         }
 
         // Reveal public pointers to
         // private functions and properties
        return {
             load: loadTopology,
-            getSelected: getSelection,
             getCoordinate: toNetworkMapCoordinate,
        };
 
@@ -522,15 +518,14 @@ var ptAnywhere = (function () {
                 y: y
             };
             if (label!="") newDevice['label'] = label;
-            return ptClient.addDevice(newDevice, function(data) { nodes.add(data); })
-            .always(callback);
+            return ptClient.addDevice(newDevice, callback);
         }
 
         function closeDialog() {
             dialogSelector.dialog( "close" );
         }
 
-        function openDialog(x, y) {
+        function openDialog(x, y, successfulCreationCallback) {
             dialogSelector.dialog({
                 title: res.creationDialog.title,
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
@@ -539,7 +534,7 @@ var ptAnywhere = (function () {
                         // We could also simply use their IDs...
                         var name = $('input[name="' + html.nameField + '"]', dialogSelector).val().trim();
                         var type = $('select[name="' + html.typeField + '"]', dialogSelector).val();
-                        addDevice(name, type, x, y, closeDialog);
+                        addDevice(name, type, x, y, successfulCreationCallback).always(closeDialog);
                     },
                     Cancel: closeDialog
                 }
@@ -674,9 +669,7 @@ var ptAnywhere = (function () {
             if (selectedTab==html.tab1) { // General settings
                 var deviceLabel = $('input[name="' + html.nameField + '"]', dialogSelector).val();
                 var defaultGateway = $('input[name="' + html.gatewayField + '"]', dialogSelector).val();
-                ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, function(result) {
-                                                nodes.update(result);
-                                            }).always(callback);
+                ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, callback);
             } else if (selectedTab==html.tab2) { // Interfaces
                 var portURL = $('select[name="' + html.iFaceSelector + '"]', dialogSelector).val();
                 var portIpAddress = $('input[name="' + html.ipField + '"]', dialogSelector).val();
@@ -688,7 +681,11 @@ var ptAnywhere = (function () {
             }
         }
 
-        function openDialog(deviceToModify) {
+        function closeDialog() {
+            dialogSelector.dialog( "close" );
+        }
+
+        function openDialog(deviceToModify, successfulModificationCallback) {
             selectedDevice = deviceToModify;
             updateEditForm();
 
@@ -699,11 +696,7 @@ var ptAnywhere = (function () {
                 autoOpen: false, modal: true, draggable: false,
                 buttons: {
                     "SUBMIT": function() {
-                        var dialog = $(this);
-                        var callback = function() {
-                            dialog.dialog( "close" );
-                        };
-                        handleModificationSubmit(callback);
+                        handleModificationSubmit(successfulModificationCallback).always(closeDialog);
                     },
                     Cancel: function() {
                         $(this).dialog( "close" );
@@ -714,7 +707,6 @@ var ptAnywhere = (function () {
             var form = dialog.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
             dialog.dialog( "open" );
         }
-
 
         function createDialog(parentSelector, dialogId) {
             createDOM(parentSelector, dialogId);

@@ -308,31 +308,44 @@ var ptAnywhere = (function () {
         var fromDevice = null, toDevice = null;
         var oneLoaded = false;
 
+        // Literals for classes
+        var clazz = {
+            fromName: 'fromDeviceName',
+            toName: 'toDeviceName',
+            fromInterface: 'linkFromInterface',
+            toInterface: 'linkToInterface',
+            loading: 'loading',
+            loaded: 'loaded',
+            error: 'error',
+            error_msg: 'error-msg',
+        }
+
+
         function createDOM(parentSelector, dialogId) {
             var dialogForm = $('<form name="link-devices"></form>');
-            dialogForm.append('<div class="loading">Loading info...</div>');
-            dialogForm.append('<div class="loaded">' +
-                              '  <p>Please select which ports to connect...</p>' +
-                              '  <p><span id="fromDeviceName">Device 1</span>:' +
-                              '    <select id="linkFromInterface" name="linkFromInterface" size="1">' +
-                              '      <option value="loading">Loading...</option>' +
+            dialogForm.append('<div class="' + clazz.loading + '">' + res.loading_info + '</div>');
+            dialogForm.append('<div class="' + clazz.loaded + '">' +
+                              '  <p>' + res.link_dialog.select + '</p>' +
+                              '  <p><span class="' + clazz.fromName + '">Device 1</span>:' +
+                              '    <select class="' + clazz.fromInterface + '" size="1">' +
+                              '      <option value="loading">' + res.loading + '</option>' +
                               '     </select>' +
                               '  </p>' +
-                              '  <p><span id="toDeviceName">Device 2</span>:' +
-                              '    <select id="linkToInterface" name="linkToInterface" size="1">' +
-                              '      <option value="loading">Loading...</option>' +
+                              '  <p><span class="' + clazz.toName + '">Device 2</span>:' +
+                              '    <select class="' + clazz.toInterface + '" size="1">' +
+                              '      <option value="loading">' + res.loading + '</option>' +
                               '    </select>' +
                               '  </p>' +
                               '</div>');
-            dialogForm.append('<div class="error">' +
-                              '  <p>Sorry, something went wrong during the link creation.</p>' +
-                              '  <p class="error-msg"></p>' +
+            dialogForm.append('<div class="' + clazz.error + '">' +
+                              '  <p>' + res.link_dialog.error + '</p>' +
+                              '  <p class="' + clazz.error_msg + '"></p>' +
                               '</div>');
-            parentSelector.append('<div id="' + dialogId + '" title="Link two devices">' + dialogForm.html() + '</div>');
+            parentSelector.append('<div id="' + dialogId + '">' + dialogForm.html() + '</div>');
         }
 
         function showPanel(classToShow) {
-            var classNames = ["loading", "loaded", "error"];
+            var classNames = [clazz.loading, clazz.loaded, clazz.error];
             for (i in classNames) {
                 if (classNames[i]==classToShow) {
                     $(" ." + classNames[i], dialogSelector).show();
@@ -343,8 +356,8 @@ var ptAnywhere = (function () {
         }
 
         function showErrorInPanel(errorMessage) {
-            $(".error .error-msg", dialogSelector).text(errorMessage);
-            showPanel("error");
+            $('.' + clazz.error + ' .' + clazz.error_msg, dialogSelector).text(errorMessage);
+            showPanel(clazz.error);
         }
 
         function getReducedOptions() {
@@ -362,8 +375,8 @@ var ptAnywhere = (function () {
                                     to: toDevice.id,
                                 }]);
                             };
-                            var fromPortURL = $("#linkFromInterface option:selected", dialogSelector).val();
-                            var toPortURL = $("#linkToInterface option:selected", dialogSelector).val();
+                            var fromPortURL = $('.' + clazz.fromInterface + ' option:selected', dialogSelector).val();
+                            var toPortURL = $('.' + clazz.toInterface + ' option:selected', dialogSelector).val();
                             ptAnywhere.client.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
                         },
                 Cancel: close
@@ -375,11 +388,11 @@ var ptAnywhere = (function () {
             if (ports==null || ports.length==0) {
                 showErrorInPanel("One of the devices you are trying to link has no available interfaces.");
             } else {
-                var selectPortsEl = $((isFrom)? "#linkFromInterface": "#linkToInterface", dialogSelector);
+                var selectPortsEl = $((isFrom)? '.' + clazz.fromInterface : '.' + clazz.toInterface, dialogSelector);
                 loadPortsInSelect(ports, selectPortsEl, null);
                 if (oneLoaded) { // TODO Check race conditions!
                     // Success: both loaded!
-                    showPanel("loaded");
+                    showPanel(clazz.loaded);
                     dialogSelector.dialog('option', 'buttons', getOptions());
                 } else {
                     oneLoaded = true;
@@ -389,7 +402,7 @@ var ptAnywhere = (function () {
 
         function afterLoadingError(device, data) {
             console.error("Something went wrong getting this devices' available ports " + device.id + ".")
-            showErrorInPanel("Unable to get " + device.label + " device's ports.", dialogSelector);
+            showErrorInPanel("Unable to get " + device.label + " device's ports.");
         }
 
         function loadAvailablePorts() {
@@ -415,13 +428,13 @@ var ptAnywhere = (function () {
         function openDialog(fromD, toD) {
             fromDevice = fromD;
             toDevice = toD;
-            showPanel("loading");
+            showPanel(clazz.loading);
 
-            $("#fromDeviceName", dialogSelector).text(fromDevice.label);
-            $("#toDeviceName", dialogSelector).text(toDevice.label);
+            $('.' + clazz.fromName, dialogSelector).text(fromDevice.label);
+            $('.' + clazz.toName, dialogSelector).text(toDevice.label);
 
             dialogSelector.dialog({
-                title: "Connect two devices",
+                title: res.link_dialog.title,
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
                 buttons: getReducedOptions()
              });

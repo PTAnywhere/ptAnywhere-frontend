@@ -159,6 +159,22 @@ var ptAnywhere = (function () {
         //var nodes = null; // To replace in the future with null
         //var edges = null; // To replace in the future with null
         var network;
+        var containerSelector = null;
+
+        var html = {  // Literals for classes, identifiers, names or paths
+            iconsPath: '../../static/images/',
+            cLoadingIcon: 'loading-icon',
+            idLoadingMessage: 'loadingMessage'
+        };
+
+        // Created the DOM that shorty afterwards will be replaced by the network map
+        function createTemporaryDOM() {
+            containerSelector.append('<img class="' + html.cLoadingIcon + '" src="' + html.iconsPath + 'loading.gif" alt="Loading network topology..." />' +
+                                  '<div style="text-align: center;">' +
+                                  '<p>' + res.network.loading + '<p>' +
+                                  '<p id="' + html.idLoadingMessage + '"></p>' +
+                                  '</div>');
+        }
 
         function drawTopology(responseData) {
             // Initialize data sets if needed
@@ -183,7 +199,6 @@ var ptAnywhere = (function () {
             if (network==null) {
                 // create a network
                 var visData = { nodes : nodes, edges : edges };
-                var iconsPath = '../../static/images/';
                 var options = {
                     nodes:{
                         physics: false,
@@ -202,22 +217,22 @@ var ptAnywhere = (function () {
                         // TODO room for improvement, static URL vs relative URL
                         cloudDevice : {
                             shape : 'image',
-                            image : iconsPath + 'cloud.png',
+                            image : html.iconsPath + 'cloud.png',
                             size: 50,
                         },
                         routerDevice : {
                             shape : 'image',
-                            image : iconsPath + 'router.png',
+                            image : html.iconsPath + 'router.png',
                             size: 45,
                         },
                         switchDevice : {
                             shape : 'image',
-                            image : iconsPath + 'switch.png',
+                            image : html.iconsPath + 'switch.png',
                             size: 35,
                         },
                         pcDevice : {
                             shape : 'image',
-                            image : iconsPath + 'PC.png',
+                            image : html.iconsPath + 'PC.png',
                             size: 45,
                         }
                     },
@@ -252,9 +267,7 @@ var ptAnywhere = (function () {
                                     },
                     }
                 };
-
-                var container = $('#network').get(0);
-                network = new vis.Network(container, visData, options);
+                network = new vis.Network(containerSelector.get(0), visData, options);
                 network.on('doubleClick', commandLine.open);
             }
         }
@@ -272,12 +285,17 @@ var ptAnywhere = (function () {
         /**
          * @arg callback If it is null, it is simply ignored.
          */
-        function loadTopology(callback) {
+        function loadTopology(containerId, callback) {
+            containerSelector = $('#' + containerId);
+            createTemporaryDOM();
+
             var draw = drawTopology;
             ptAnywhere.client.getNetwork(function(data) {
                 draw(data);
                 if (callback!=null)
                     callback();
+            }, function(tryCount, maxRetries, errorMessage) {
+                $('#' + html.idLoadingMessage).text(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
             });
         }
 
@@ -468,7 +486,7 @@ var ptAnywhere = (function () {
             nameId: 'newDeviceName',
             typeField: 'type',
             typeId: 'newDeviceType',
-        }
+        };
 
         function createDOM(parentSelector, dialogId) {
             var dialogForm = $('<form></form>');
@@ -556,7 +574,7 @@ var ptAnywhere = (function () {
             cLoaded: 'loaded',
             cIFaceDetails: 'iFaceDetails',
             cNoIFaceDetails: 'noIFaceDetails',
-        }
+        };
 
         function createDOM(parentSelector, dialogId) {
             var dialogForm = $('<form></form>');
@@ -715,7 +733,7 @@ var ptAnywhere = (function () {
         };
         for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
 
-        networkMap.load();  // Always loaded
+        networkMap.load('network');  // Always loaded
         if (settings.commandLine) {
             commandLine.init(this.widgetSelector);
         }

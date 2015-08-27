@@ -38,13 +38,7 @@
 
 </div>
 <div class="view">
-    <div id="network">
-        <img id="loading" src="${base}/images/loading.gif" alt="Loading network topology..." />
-        <div style="text-align: center;">
-            <p>Loading topology...<p>
-            <p id="loadingMessage"></p>
-        </div>
-    </div>
+    <div id="network"></div>
     <fieldset id="creation-fieldset">
         <legend>To create a new device, drag it to the network map</legend>
         <div id="creation-menu">

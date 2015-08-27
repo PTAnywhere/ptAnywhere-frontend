@@ -2,6 +2,12 @@ var res = {
     loading: 'Loading...',
     loadingInfo: 'Loading info...',
     name: 'Name',
+    network: {
+        loading: 'Loading network...',
+        attempt: 'Attempt',
+        errorUnavailable: 'Instance not yet available',
+        errorTimeout: 'Timeout',
+    },
     linkDialog: {
         title: 'Connect two devices',
         select: 'Please select which ports to connect...',

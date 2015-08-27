@@ -79,7 +79,7 @@ div.logos img {
 	border-bottom: 4px solid lightgray;
 }
 
-#loading {
+#network .loading-icon {
 	display: block;
 	padding-top: 190px;
 	margin-left: auto;

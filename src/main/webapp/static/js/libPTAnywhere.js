@@ -61,7 +61,7 @@ var packetTracer = (function () {
     /**
        * @arg callback If it is null, it is simply ignored.
        */
-    PTClient.prototype.getNetwork = function(callback) {
+    PTClient.prototype.getNetwork = function(callback, beforeRetry) {
         var maxRetries = 5;
         var delayBetweenRetries = 2000;
         var sessionExpirationCallback = this.customSettings.statusCode['410'];
@@ -74,7 +74,7 @@ var packetTracer = (function () {
                 503: function() {
                         this.tryCount++;
                         if (this.tryCount <= this.retryLimit) {
-                            $("#loadingMessage").text("Instance not yet available. Attempt " + this.tryCount + "/" + maxRetries + ".");
+                            beforeRetry(this.tryCount, maxRetries, res.network.errorUnavailable);
                             var thisAjax = this;
                             setTimeout(function() { $.ajax(thisAjax); }, delayBetweenRetries);  // retry
                         }
@@ -85,7 +85,7 @@ var packetTracer = (function () {
                     this.tryCount++;
                     console.error("The topology could not be loaded: timeout.");
                     if (this.tryCount <= this.retryLimit) {
-                        $("#loadingMessage").text("Timeout. Attempt " + this.tryCount + "/" + maxRetries + ".");
+                        beforeRetry(this.tryCount, maxRetries, res.network.errorTimeout);
                         $.ajax(this); // try again
                     }
                 } else {

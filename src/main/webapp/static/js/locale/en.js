@@ -1,14 +1,23 @@
 var res = {
     loading: 'Loading...',
-    loading_info: 'Loading info...',
-    link_dialog: {
+    loadingInfo: 'Loading info...',
+    name: 'Name',
+    linkDialog: {
         title: 'Connect two devices',
         select: 'Please select which ports to connect...',
         error: 'Sorry, something went wrong during the link creation.',
     },
-    creation_dialog: {
+    creationDialog: {
         title: 'Create new device',
-        name: 'Name',
         type: 'Device type',
+    },
+    modificationDialog: {
+        title: 'Modify device',
+        globalSettings: 'Global Settings',
+        interfaces: 'Interfaces',
+        defaultGW: 'Default gateway',
+        ipAddress: 'IP address',
+        subnetMask: 'Subnet mask',
+        noSettings: 'No settings can be specified for this type of interface.',
     }
 };

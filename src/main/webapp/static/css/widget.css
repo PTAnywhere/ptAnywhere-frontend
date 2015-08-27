@@ -200,23 +200,23 @@ select {
 	padding: 0;
 }
 
-#modify-dialog-tabs {
+.modify-dialog-tabs {
 	border: 0;
 }
 
-#modify-dialog-tabs .ui-widget-header {
+.modify-dialog-tabs .ui-widget-header {
 	border-width: 0 0 1px 0;
 	background-image: none;
 	background-color: transparent;
 }
 
-#modify-dialog-tabs .ui-corner-all {
+.modify-dialog-tabs .ui-corner-all {
 	border-bottom-left-radius: 0px;
 	border-bottom-right-radius: 0px;
 	border-bottom-width: 0px;
 }
 
-#modify-dialog-tabs .ui-tabs-panel {
+.modify-dialog-tabs .ui-tabs-panel {
 	border-top-left-radius: 6px;
 	border-top-right-radius: 6px;
 	border-top-width: 1px;

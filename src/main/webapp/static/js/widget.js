@@ -231,7 +231,7 @@ var ptAnywhere = (function () {
                                                     nodes.get(data.to));
                                  },
                         editNode: function(data, callback) {
-                                    deviceModificationDialog.create(data.id);
+                                    deviceModificationDialog.open(nodes.get(data.id));
                                     callback(data);
                                   },
                         editEdge: false,
@@ -323,9 +323,9 @@ var ptAnywhere = (function () {
 
         function createDOM(parentSelector, dialogId) {
             var dialogForm = $('<form name="link-devices"></form>');
-            dialogForm.append('<div class="' + clazz.loading + '">' + res.loading_info + '</div>');
+            dialogForm.append('<div class="' + clazz.loading + '">' + res.loadingInfo + '</div>');
             dialogForm.append('<div class="' + clazz.loaded + '">' +
-                              '  <p>' + res.link_dialog.select + '</p>' +
+                              '  <p>' + res.linkDialog.select + '</p>' +
                               '  <p><span class="' + clazz.fromName + '">Device 1</span>:' +
                               '    <select class="' + clazz.fromInterface + '" size="1">' +
                               '      <option value="loading">' + res.loading + '</option>' +
@@ -338,7 +338,7 @@ var ptAnywhere = (function () {
                               '  </p>' +
                               '</div>');
             dialogForm.append('<div class="' + clazz.error + '">' +
-                              '  <p>' + res.link_dialog.error + '</p>' +
+                              '  <p>' + res.linkDialog.error + '</p>' +
                               '  <p class="' + clazz.error_msg + '"></p>' +
                               '</div>');
             parentSelector.append('<div id="' + dialogId + '">' + dialogForm.html() + '</div>');
@@ -434,7 +434,7 @@ var ptAnywhere = (function () {
             $('.' + clazz.toName, dialogSelector).text(toDevice.label);
 
             dialogSelector.dialog({
-                title: res.link_dialog.title,
+                title: res.linkDialog.title,
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
                 buttons: getReducedOptions()
              });
@@ -463,25 +463,22 @@ var ptAnywhere = (function () {
     var deviceCreationDialog = (function () {
 
         var dialogSelector = null;
-
-        // Literals for classes, identifiers or names
-        var html = {
+        var html = {  // Literals for classes, identifiers or names
             nameField: 'name',
             nameId: 'newDeviceName',
             typeField: 'type',
             typeId: 'newDeviceType',
         }
 
-
         function createDOM(parentSelector, dialogId) {
             var dialogForm = $('<form></form>');
             dialogForm.append('<fieldset style="margin-top: 15px;">' +
                               '  <div>' +
-                              '    <label for="' + html.nameId + '">' + res.creation_dialog.name + ': </label>' +
+                              '    <label for="' + html.nameId + '">' + res.name + ': </label>' +
                               '    <input type="text" name="' + html.nameField + '" id="' + html.nameId + '" style="float: right;">' +
                               '  </div>' +
                               '  <div style="margin-top: 20px;">' +
-                              '    <label for="' + html.typeId + '">' + res.creation_dialog.type + ': </label>' +
+                              '    <label for="' + html.typeId + '">' + res.creationDialog.type + ': </label>' +
                               '    <span style="float: right;">' +
                               '      <select name="' + html.typeField + '" id="' + html.typeId + '">' +
                               '        <option value="cloud" data-class="cloud">Cloud</option>' +
@@ -512,7 +509,7 @@ var ptAnywhere = (function () {
 
         function openDialog(x, y) {
             dialogSelector.dialog({
-                title: res.creation_dialog.title,
+                title: res.creationDialog.title,
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
                 buttons: {
                     "SUBMIT": function() {
@@ -543,38 +540,83 @@ var ptAnywhere = (function () {
 
     // Module for device modification dialog
     var deviceModificationDialog = (function () {
+
+        var dialogSelector = null;
         var selectedDevice;
-        var modForm;  // Not yet checked, but this should improve selectors performance.
+        var html = {  // Literals for classes, identifiers or names
+            tabs: 'modify-dialog-tabs',
+            tab1: 'tabs-1',
+            tab2: 'tabs-2',
+            nameField: 'displayName',
+            gatewayField: 'defaultGateway',
+            ipField: 'ipAddress',
+            subnetField: 'subnetMask',
+            iFaceSelector: 'interface',
+            cLoading: 'loading',
+            cLoaded: 'loaded',
+            cIFaceDetails: 'iFaceDetails',
+            cNoIFaceDetails: 'noIFaceDetails',
+        }
+
+        function createDOM(parentSelector, dialogId) {
+            var dialogForm = $('<form></form>');
+            dialogForm.append('<ul>' +
+                              '  <li><a href="#' + html.tab1 + '">' + res.modificationDialog.globalSettings + '</a></li>' +
+                              '  <li><a href="#' + html.tab2 + '">' + res.modificationDialog.interfaces + '</a></li>' +
+                              '</ul>' +
+                              '<div id="' + html.tab1 + '">' +
+                              '  <label>' + res.name + ': <input type="text" name="' + html.nameField + '"></label><br />' +
+                              '  <label>' + res.modificationDialog.defaultGW + ': <input type="text" name="' + html.gatewayField + '"></label>' +
+                              '</div>' +
+                              '<div id="' + html.tab2 + '">' +
+                              '  <div class="' + html.cLoading + '">' + res.loadingInfo + '</div>' +
+                              '  <div class="' + html.cLoaded + '">' +
+                              '    <label>' + res.name + ': ' +
+                              '      <select name="' + html.iFaceSelector + '" size="1">' +
+                              '        <option value="loading">' + res.loadingInfo + '</option>' +
+                              '      </select>' +
+                              '    <label>' +
+                              '    <hr>' +
+                              '    <div class="' + html.cIFaceDetails + '">' +
+                              '      <label>' + res.modificationDialog.ipAddress + ': <input type="text" name="' + html.ipField + '"></label><br>' +
+                              '      <label>' + res.modificationDialog.subnetMask + ': <input type="text" name="' + html.subnetField + '"></label>' +
+                              '    </div>' +
+                              '    <div class="' + html.cNoIFaceDetails + '">' + res.modificationDialog.noSettings + '</div>' +
+                              '  </div>' +
+                              '</div>');
+            parentSelector.append('<div id="' + dialogId + '"><div class="' + html.tabs + '">' + dialogForm.html() + '</div></div>');
+        }
 
         function showLoadingPanel(loading) {
             if (loading) {
-                $("#tabs-2>.loading").hide();
-                $("#tabs-2>.loaded").show();
+                $('#' + html.tab2 + '>.' + html.cLoading).hide();
+                $('#' + html.tab2 + '>.' + html.cLoaded).show();
             } else {
-                $("#tabs-2>.loading").show();
-                $("#tabs-2>.loaded").hide();
+                $('#' + html.tab2 + '>.' + html.cLoading).show();
+                $('#' + html.tab2 + '>.' + html.cLoaded).hide();
             }
         }
 
         function updateInterfaceInformation(port) {
             if (port.hasOwnProperty('portIpAddress') && port.hasOwnProperty('portSubnetMask')) {
-                $('#ifaceDetails', modForm).show();
-                $('#noIfaceDetails', modForm).hide();
-                $('input[name="ipAddress"]', modForm).val(port.portIpAddress);
-                $('input[name="subnetMask"]', modForm).val(port.portSubnetMask);
+                $('.' + html.cIFaceDetails, dialogSelector).show();
+                $('.' + html.cNoIFaceDetails, dialogSelector).hide();
+                $('input[name="' + html.ipField + '"]', dialogSelector).val(port.portIpAddress);
+                $('input[name="' + html.subnetField + '"]', dialogSelector).val(port.portSubnetMask);
             } else {
-                $('#ifaceDetails', modForm).hide();
-                $('#noIfaceDetails', modForm).show();
+                $('.' + html.cIFaceDetails, dialogSelector).hide();
+                $('.' + html.cNoIFaceDetails, dialogSelector).show();
             }
         }
 
         function loadPortsForInterface(ports) {
-            var selectedPort = loadPortsInSelect(ports, $("#interface"), 0);
+            var selectSelector = $('select[name="' + html.iFaceSelector + '"]', dialogSelector);
+            var selectedPort = loadPortsInSelect(ports, selectSelector, 0);
             if (selectedPort!=null) {
                 updateInterfaceInformation(selectedPort);
                 showLoadingPanel(true);
             }
-            $("#interface", modForm).change(function () {
+            selectSelector.change(function () {
                 $("option:selected", this).each(function(index, element) { // There is only one selection
                     var selectedIFace = $(element).text();
                     for (var i = 0; i < ports.length; i++) {  // Instead of getting its info again (we save one request)
@@ -590,14 +632,14 @@ var ptAnywhere = (function () {
         function updateEditForm() {
             showLoadingPanel(false);
 
-            $("input[name='deviceId']", modForm).val(selectedDevice.id);
-            $("input[name='displayName']", modForm).val(selectedDevice.label);
+            $('input[name="' + html.nameField + '"]', dialogSelector).val(selectedDevice.label);
+            var gwSelector = $('input[name="' + html.gatewayField + '"]', dialogSelector);
             if (selectedDevice.hasOwnProperty('defaultGateway')) {
-                $("input[name='defaultGateway']", modForm).val(selectedDevice.defaultGateway);
-                $("#defaultGw", modForm).show();
+                gwSelector.val(selectedDevice.defaultGateway);
+                gwSelector.parent().show();
             } else {
-                $("input[name='defaultGateway']", modForm).val("");
-                $("#defaultGw", modForm).hide();
+                gwSelector.val("");
+                gwSelector.parent().hide();
             }
 
             ptAnywhere.client.getAllPorts(selectedDevice, loadPortsForInterface);
@@ -605,29 +647,31 @@ var ptAnywhere = (function () {
 
         function handleModificationSubmit(callback) {
             // Check the tab
-            var selectedTab = $("li.ui-state-active", modForm).attr("aria-controls");
-            if (selectedTab=="tabs-1") { // General settings
-                var deviceId = $("input[name='deviceId']", modForm).val();
-                var deviceLabel = $("input[name='displayName']", modForm).val();
-                var defaultGateway = $("input[name='defaultGateway']", modForm).val();
-                ptAnywhere.client.modifyDevice(nodes.get(deviceId), deviceLabel, defaultGateway, function(result) {
+            var selectedTab = $("li.ui-state-active", dialogSelector).attr("aria-controls");
+            if (selectedTab==html.tab1) { // General settings
+                var deviceLabel = $('input[name="' + html.nameField + '"]', dialogSelector).val();
+                var defaultGateway = $('input[name="' + html.gatewayField + '"]', dialogSelector).val();
+                ptAnywhere.client.modifyDevice(selectedDevice, deviceLabel, defaultGateway, function(result) {
                                                 nodes.update(result);
                                             }).always(callback);
-            } else if (selectedTab=="tabs-2") { // Interfaces
-                var portURL = $("#interface", modForm).val();
-                var portIpAddress = $("input[name='ipAddress']", modForm).val();
-                var portSubnetMask = $("input[name='subnetMask']", modForm).val();
+            } else if (selectedTab==html.tab2) { // Interfaces
+                var portURL = $('select[name="' + html.iFaceSelector + '"]', dialogSelector).val();
+                var portIpAddress = $('input[name="' + html.ipField + '"]', dialogSelector).val();
+                var portSubnetMask = $('input[name="' + html.subnetField + '"]', dialogSelector).val();
                 // Room for improvement: the following request could be avoided when nothing has changed
                 ptAnywhere.client.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
             } else {
-                console.error("ERROR. Selected tab unknown.");
+                console.error("ERROR. Unknown selected tab.");
             }
         }
 
-        function openDialog() {
-            $("#modify-dialog-tabs").tabs();
-            var dialog = $("#modify-device").dialog({
-                title: "Modify device",
+        function openDialog(deviceToModify) {
+            selectedDevice = deviceToModify;
+            updateEditForm();
+
+            $("." + html.tabs, dialogSelector).tabs();
+            var dialog = dialogSelector.dialog({
+                title: res.modificationDialog.title,
                 height: 350, width: 450,
                 autoOpen: false, modal: true, draggable: false,
                 buttons: {
@@ -648,15 +692,15 @@ var ptAnywhere = (function () {
             dialog.dialog( "open" );
         }
 
-        function createDialog(deviceId) {
-            selectedDevice = nodes.get(deviceId);
-            modForm = $("form[name='modify-device']");
-            updateEditForm();
-            openDialog();
+
+        function createDialog(parentSelector, dialogId) {
+            createDOM(parentSelector, dialogId);
+            dialogSelector = $("#" + dialogId, parentSelector);
         }
 
         return {
             create: createDialog,
+            open: openDialog,
         };
     })();
     // End deviceModificationDialog module
@@ -677,7 +721,8 @@ var ptAnywhere = (function () {
         }
         linkDialog.create(this.widgetSelector, "link-devices");
         deviceCreationDialog.create(this.widgetSelector, "create-device");
-        //$("#link-devices").hide();
+        deviceModificationDialog.create(this.widgetSelector, "modify-device");
+        // Better with CSS?
         this.widgetSelector.hide();
     }
 
@@ -729,8 +774,4 @@ $(function() {
              return li.appendTo( ul );
         }
     });
-
-    // Better with CSS?
-    $("#create-device").hide();
-    $("#modify-device").hide();
 });

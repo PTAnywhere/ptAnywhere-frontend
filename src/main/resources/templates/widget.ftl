@@ -74,39 +74,6 @@
         <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo" class="kmi-logo"></a>
     </div>
 </div>
-<div id="modify-device">
-    <div id="modify-dialog-tabs">
-        <form name="modify-device">
-            <input type="hidden" name="deviceId" value="">
-            <ul>
-                <li><a href="#tabs-1">Global Settings</a></li>
-                <li><a href="#tabs-2">Interfaces</a></li>
-            </ul>
-            <div id="tabs-1">
-                Name: <input type="text" name="displayName"><br />
-                <span id="defaultGw">Default gateway: <input type="text" name="defaultGateway"></span>
-            </div>
-            <div id="tabs-2">
-                <div class="loading">
-                    Loading info...
-                </div>
-                <div id="loadedPanel" class="loaded">
-                    Name: <select id="interface" name="interface" size="1">
-                        <option value="loading">Loading...</option>
-                    </select>
-                    <hr>
-                    <div id="ifaceDetails">
-                        IP address: <input type="text" name="ipAddress"><br>
-                        Subnet mask: <input type="text" name="subnetMask">
-                    </div>
-                    <div id="noIfaceDetails">
-                        No settings can be specified for this type of interface.
-                    </div>
-                </div>
-            </div>
-        </form>
-    </div>
-</div>
 <div id="notFound" style="display: none;">
     <div class="message">
         <h1>Topology not found.</h1>

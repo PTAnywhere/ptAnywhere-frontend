@@ -224,7 +224,7 @@ var ptAnywhere = (function () {
                     manipulation: {
                         initiallyActive: true,
                         addNode: function(data, callback) {
-                                    deviceCreationDialog.create(data.x, data.y);
+                                    deviceCreationDialog.open(data.x, data.y);
                                  },
                         addEdge: function(data, callback) {
                                     linkDialog.open(nodes.get(data.from),
@@ -461,44 +461,83 @@ var ptAnywhere = (function () {
 
     // Module for creation dialog
     var deviceCreationDialog = (function () {
-        function addDeviceWithName(label, type, x, y, callback) {
-            return ptAnywhere.client.addDevice({
-                "label": label,
-                "group": type,
-                "x": x,
-                "y": y
-            }, function(data) { nodes.add(data); })
+
+        var dialogSelector = null;
+
+        // Literals for classes, identifiers or names
+        var html = {
+            nameField: 'name',
+            nameId: 'newDeviceName',
+            typeField: 'type',
+            typeId: 'newDeviceType',
+        }
+
+
+        function createDOM(parentSelector, dialogId) {
+            var dialogForm = $('<form></form>');
+            dialogForm.append('<fieldset style="margin-top: 15px;">' +
+                              '  <div>' +
+                              '    <label for="' + html.nameId + '">' + res.creation_dialog.name + ': </label>' +
+                              '    <input type="text" name="' + html.nameField + '" id="' + html.nameId + '" style="float: right;">' +
+                              '  </div>' +
+                              '  <div style="margin-top: 20px;">' +
+                              '    <label for="' + html.typeId + '">' + res.creation_dialog.type + ': </label>' +
+                              '    <span style="float: right;">' +
+                              '      <select name="' + html.typeField + '" id="' + html.typeId + '">' +
+                              '        <option value="cloud" data-class="cloud">Cloud</option>' +
+                              '        <option value="router" data-class="router">Router</option>' +
+                              '        <option value="switch" data-class="switch">Switch</option>' +
+                              '        <option value="pc" data-class="pc">PC</option>' +
+                              '      </select>' +
+                              '    </span>' +
+                              '  </div>' +
+                              '</fieldset>');
+            parentSelector.append('<div id="' + dialogId + '">' + dialogForm.html() + '</div>');
+        }
+
+        function addDevice(label, type, x, y, callback) {
+            var newDevice = {
+                group: type,
+                x: x,
+                y: y
+            };
+            if (label!="") newDevice['label'] = label;
+            return ptAnywhere.client.addDevice(newDevice, function(data) { nodes.add(data); })
             .always(callback);
         }
 
-        function createDialog(x, y) {
-            var dialog = $("#create-device").dialog({
-                title: "Create new device",
+        function closeDialog() {
+            dialogSelector.dialog( "close" );
+        }
+
+        function openDialog(x, y) {
+            dialogSelector.dialog({
+                title: res.creation_dialog.title,
                 autoOpen: false, height: 300, width: 400, modal: true, draggable: false,
                 buttons: {
                     "SUBMIT": function() {
-                        var callback = function() {
-                            dialog.dialog( "close" );
-                        };
-                        name = document.forms["create-device"]["name"].value;
-                        type = document.forms["create-device"]["type"].value;
-                        addDeviceWithName(name, type, x, y, callback);
+                        // We could also simply use their IDs...
+                        var name = $('input[name="' + html.nameField + '"]', dialogSelector).val().trim();
+                        var type = $('select[name="' + html.typeField + '"]', dialogSelector).val();
+                        addDevice(name, type, x, y, closeDialog);
                     },
-                    Cancel:function() {
-                        $(this).dialog( "close" );
-                    }
-                }, close: function() { /*console.log("Closing dialog...");*/ }
+                    Cancel: closeDialog
+                }
              });
-            dialog.parent().attr("id", "create-dialog");
-            var form = dialog.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
-            $("#device-type").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons customicons");
-            dialog.dialog( "open" );
+            var form = dialogSelector.find( "form" ).on("submit", function( event ) { event.preventDefault(); });
+            $('#' + html.typeId).iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons customicons");
+            dialogSelector.dialog( "open" );
+        }
+
+        function createDialog(parentSelector, dialogId) {
+            createDOM(parentSelector, dialogId);
+            dialogSelector = $("#" + dialogId, parentSelector);
         }
 
         return {
             create: createDialog,
+            open: openDialog,
         };
-
     })();
     // End deviceCreationDialog module
 
@@ -637,6 +676,7 @@ var ptAnywhere = (function () {
             commandLine.init(this.widgetSelector);
         }
         linkDialog.create(this.widgetSelector, "link-devices");
+        deviceCreationDialog.create(this.widgetSelector, "create-device");
         //$("#link-devices").hide();
         this.widgetSelector.hide();
     }

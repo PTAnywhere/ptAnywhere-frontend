@@ -173,19 +173,19 @@ select {
 }
 
 .ui-icon.cloud {
-	background: url("cloud.png") 0 0 no-repeat;
+	background: url("../images/cloud.png") 0 0 no-repeat;
 	background-size: 36px 24px;
 }
 .ui-icon.pc {
-	background: url("PC.png") 0 0 no-repeat;
+	background: url("../images/PC.png") 0 0 no-repeat;
 	background-size: 36px 24px;
 }
 .ui-icon.router {
-	background: url("router.png") 0 0 no-repeat;
+	background: url("../images/router.png") 0 0 no-repeat;
 	background-size: 36px 24px;
 }
 .ui-icon.switch {
-	background: url("switch.png") 0 0 no-repeat;
+	background: url("../images/switch.png") 0 0 no-repeat;
 	background-size: 36px 24px;
 }
 

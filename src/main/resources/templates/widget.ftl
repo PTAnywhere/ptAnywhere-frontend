@@ -74,27 +74,6 @@
         <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo" class="kmi-logo"></a>
     </div>
 </div>
-<div id="create-device" title="Create new device">
-    <form name="create-device">
-        <fieldset style="margin-top: 15px;">
-            <div>
-                <label for="create-name">Name: </label>
-                <input type="text" name="name" id="create-name" style="float: right;">
-            </div>
-            <div style="margin-top: 20px;">
-                <label for="device-type">Device type: </label>
-                <span style="float: right;">
-                    <select name="type" id="device-type">
-                        <option value="cloud" data-class="cloud">Cloud</option>
-                        <option value="router" data-class="router">Router</option>
-                        <option value="switch" data-class="switch">Switch</option>
-                        <option value="pc" data-class="pc">PC</option>
-                    </select>
-                </span>
-            </div>
-        </fieldset>
-    </form>
-</div>
 <div id="modify-device">
     <div id="modify-dialog-tabs">
         <form name="modify-device">

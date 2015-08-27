@@ -36,8 +36,12 @@ var ptAnywhere = (function () {
 
     // Module which handles command line
     var commandLine = (function () {
+
+        var dialogSelector;
+
         function createDOM(parentSelector) {
-            parentSelector.append('<div id="command-line" title="Command line"></div>');
+            dialogSelector = $('<div></div>');
+            parentSelector.append(dialogSelector);
         }
 
         function getCommandLineURL(nodeId) {
@@ -47,7 +51,8 @@ var ptAnywhere = (function () {
         function openIFrame() {
             var selected = networkMap.getSelected();
             if (selected!=null) { // Only if just one is selected
-                var dialog = $("#command-line").dialog({
+                var dialog = dialogSelector.dialog({
+                    title: res.commandLineDialog.title,
                     autoOpen: false, height: 400, width: 600, modal: true, draggable: false,
                     close: function() { dialog.html(""); }
                 });

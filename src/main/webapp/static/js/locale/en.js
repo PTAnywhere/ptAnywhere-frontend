@@ -8,6 +8,9 @@ var res = {
         errorUnavailable: 'Instance not yet available',
         errorTimeout: 'Timeout',
     },
+    commandLineDialog: {
+        title: 'Command line',
+    },
     linkDialog: {
         title: 'Connect two devices',
         select: 'Please select which ports to connect...',

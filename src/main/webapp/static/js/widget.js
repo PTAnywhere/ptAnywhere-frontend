@@ -138,7 +138,7 @@ var ptAnywhere = (function () {
                     originalObj.creationCallback(ui.offset, function(data) {
                         originalObj.moveToStartingPosition();
                         warning.remove();
-                        nodes.add(data);
+                        networkMap.addNode(data);
                     });
                 } else {
                     originalObj.moveToStartingPosition();
@@ -235,16 +235,24 @@ var ptAnywhere = (function () {
                     manipulation: {
                         initiallyActive: true,
                         addNode: function(data, callback) {
-                                    var success = function(newNode) { nodes.add(newNode); };
-                                    deviceCreationDialog.open(data.x, data.y, success);
+                                    deviceCreationDialog.open(data.x, data.y, addNode);
                                  },
                         addEdge: function(data, callback) {
-                                    linkDialog.open(nodes.get(data.from),
-                                                    nodes.get(data.to));
+                                    var fromDevice = nodes.get(data.from);
+                                    var toDevice = nodes.get(data.to);
+                                    var sCallback = function(edgeId, edgeUrl) {
+                                                        edges.add([{
+                                                            id: edgeId,
+                                                            url: edgeUrl,
+                                                            from: fromDevice.id,
+                                                            to: toDevice.id,
+                                                        }]);
+                                                    };
+                                    linkDialog.open(fromDevice, toDevice, sCallback);
                                  },
                         editNode: function(data, callback) {
-                                    var success = function(result) { nodes.update(result); };
-                                    deviceModificationDialog.open(nodes.get(data.id), success);
+                                    var successUpdatingNode = function(result) { nodes.update(result); };
+                                    deviceModificationDialog.open(nodes.get(data.id), successUpdatingNode);
                                     callback(data);
                                   },
                         editEdge: false,
@@ -276,6 +284,10 @@ var ptAnywhere = (function () {
                         commandLine.open(selected);
                 });
             }
+        }
+
+        function addNode(newNode) {
+            nodes.add(newNode);
         }
 
         /**
@@ -318,6 +330,7 @@ var ptAnywhere = (function () {
         // private functions and properties
        return {
             load: loadTopology,
+            addNode: addNode,
             getCoordinate: toNetworkMapCoordinate,
        };
 
@@ -329,6 +342,7 @@ var ptAnywhere = (function () {
 
         var dialogSelector = null;
         var fromDevice = null, toDevice = null;
+        var successfulCreationCallback;
         var oneLoaded = false;
 
         // Literals for classes
@@ -390,14 +404,6 @@ var ptAnywhere = (function () {
         function getOptions() {
             return {
                 "SUBMIT": function() {
-                            var successfulCreationCallback = function(edgeId, edgeUrl) {
-                                edges.add([{
-                                    id: edgeId,
-                                    url: edgeUrl,
-                                    from: fromDevice.id,
-                                    to: toDevice.id,
-                                }]);
-                            };
                             var fromPortURL = $('.' + clazz.fromInterface + ' option:selected', dialogSelector).val();
                             var toPortURL = $('.' + clazz.toInterface + ' option:selected', dialogSelector).val();
                             ptClient.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
@@ -448,9 +454,10 @@ var ptAnywhere = (function () {
                                                 close);
         }
 
-        function openDialog(fromD, toD) {
+        function openDialog(fromD, toD, callback) {
             fromDevice = fromD;
             toDevice = toD;
+            successfulCreationCallback = callback;
             showPanel(clazz.loading);
 
             $('.' + clazz.fromName, dialogSelector).text(fromDevice.label);
@@ -667,19 +674,20 @@ var ptAnywhere = (function () {
             ptClient.getAllPorts(selectedDevice, loadPortsForInterface);
         }
 
-        function handleModificationSubmit(callback) {
+        function handleModificationSubmit(callback, alwaysCallback) {
             // Check the tab
             var selectedTab = $("li.ui-state-active", dialogSelector).attr("aria-controls");
             if (selectedTab==html.tab1) { // General settings
                 var deviceLabel = $('input[name="' + html.nameField + '"]', dialogSelector).val();
                 var defaultGateway = $('input[name="' + html.gatewayField + '"]', dialogSelector).val();
-                ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, callback);
+                return ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, callback).always(alwaysCallback);
             } else if (selectedTab==html.tab2) { // Interfaces
                 var portURL = $('select[name="' + html.iFaceSelector + '"]', dialogSelector).val();
                 var portIpAddress = $('input[name="' + html.ipField + '"]', dialogSelector).val();
                 var portSubnetMask = $('input[name="' + html.subnetField + '"]', dialogSelector).val();
                 // Room for improvement: the following request could be avoided when nothing has changed
-                ptClient.modifyPort(portURL, portIpAddress, portSubnetMask, callback);  // In case just the port details are modified...
+                // In case just the port details are modified...
+                return ptClient.modifyPort(portURL, portIpAddress, portSubnetMask).always(alwaysCallback);
             } else {
                 console.error("ERROR. Unknown selected tab.");
             }
@@ -689,7 +697,7 @@ var ptAnywhere = (function () {
             dialogSelector.dialog( "close" );
         }
 
-        function openDialog(deviceToModify, successfulModificationCallback) {
+        function openDialog(deviceToModify, successfulNodeModificationCallback) {
             selectedDevice = deviceToModify;
             updateEditForm();
 
@@ -700,7 +708,7 @@ var ptAnywhere = (function () {
                 autoOpen: false, modal: true, draggable: false,
                 buttons: {
                     "SUBMIT": function() {
-                        handleModificationSubmit(successfulModificationCallback).always(closeDialog);
+                        handleModificationSubmit(successfulNodeModificationCallback, closeDialog);
                     },
                     Cancel: function() {
                         $(this).dialog( "close" );

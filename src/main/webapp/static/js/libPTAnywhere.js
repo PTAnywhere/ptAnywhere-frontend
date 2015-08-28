@@ -127,7 +127,7 @@ var packetTracer = (function () {
         .fail(function(data) { console.error("Something went wrong in the device modification."); });
     };
 
-    PTClient.prototype.modifyPort = function(portURL, ipAddress, subnetMask, callback) {
+    PTClient.prototype.modifyPort = function(portURL, ipAddress, subnetMask) {
          // Send new IP settings
          var modification = {
              portIpAddress: ipAddress,
@@ -137,8 +137,7 @@ var packetTracer = (function () {
              function(result) {
                  console.log("The port has been modified successfully.");
          }, this.customSettings)
-         .fail(function(data) { console.error("Something went wrong in the port modification."); })
-         .always(callback);
+         .fail(function(data) { console.error("Something went wrong in the port modification."); });
     };
 
     PTClient.prototype.getAllPorts = function(device, callback) {

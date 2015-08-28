@@ -42,7 +42,7 @@
 <div id="widget">
     <div class="message">
         <p>Start using the widget by reserving a <span style="font-style: italic;">Packet Tracer</span> instance!</p>
-        <button style="margin-top: 4%;">Reserve</button>
+        <button id="btnReserve" style="margin-top: 4%;">Reserve</button>
     </div>
 </div>
 <div class="footer">

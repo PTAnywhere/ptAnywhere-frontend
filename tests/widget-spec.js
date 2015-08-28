@@ -1,9 +1,9 @@
-// npm install jasmine-node -g
-// npm install selenium-webdriver -g
-// npm install webdriver-manager -g
+// npm install
 // webdriver-manager update
 // webdriver-manager start // in one tab
+//    ( node_modules/webdriver-manager/bin/webdriver-manager update )
 // jasmine-node widget-spec.js // in another
+//    ( node_modules/jasmine-node/bin/jasmine-node widget-spec.js )
 
 var webdriver = require('selenium-webdriver');
 
@@ -18,7 +18,7 @@ var by = webdriver.By;
 var until = webdriver.until;
 
 
-describe('basic test', function () {
+describe('reservation landing page', function () {
 
     var browser;
 

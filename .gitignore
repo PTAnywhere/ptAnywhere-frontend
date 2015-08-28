@@ -25,3 +25,6 @@ release.properties
 # IntelliJ IDEA
 .idea/
 *.iml
+
+# End-to-end tests' dependencies
+tests/node_modules

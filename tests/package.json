@@ -1,0 +1,9 @@
+{
+  "dependencies": {
+    "jasmine-node": "*",
+    "selenium-webdriver": "*"
+  },
+  "devDependencies": {
+    "webdriver-manager": "*"
+  }
+}

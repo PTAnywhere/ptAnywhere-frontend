@@ -790,18 +790,3 @@ function getURLParameter(sParam) {
         }
     }
 }
-
-$(function() {
-    var debugMode = getURLParameter('debug');
-    if (debugMode!=null) {
-        $.getScript("debug.js", function() {
-            console.log("DEBUG MODE ON.");
-        });
-    }
-    if (location.port==8000) {
-        // If the page is deployed in the port 8000, it assumes that the python simple server is running
-        // and the API is working in a different server.
-        api_url = "http://localhost:8080/ptAnywhere/api";
-        console.log("Using an API deployed in a different HTTP server: " + api_url)
-    }
-});

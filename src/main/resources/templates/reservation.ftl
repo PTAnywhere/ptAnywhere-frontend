@@ -7,28 +7,27 @@
     <#include "headers/jquery-with-ui.ftl">
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
+    <script type="text/javascript" src="${base}/js/libPTAnywhere.js"></script>
     <script>
-        function createSession(event) {
-            $.post("${api}/sessions", function(data, status, xhr) {
-                var newResource = xhr.getResponseHeader('Location');
-                $.get(newResource, function(data) {
-                    window.location.href =  "p/" + data;
-                });
-            }).fail(function(data) {
-                $( "#dialog-message" ).dialog({
-                    modal: true,
-                    width: 500,
-                    buttons: {
-                        Ok: function() {
-                            $( this ).dialog( "close" );
+        $(function() {
+            $("button").button().click(function(event) {
+                packetTracer.newSession("${api}", function(newSessionURL) {
+                    $.get(newSessionURL, function(data) {
+                        window.location.href =  "p/" + data;
+                    });
+                }).fail(function(data) {
+                    console.log(data);
+                    $( "#dialog-message" ).dialog({
+                        modal: true,
+                        width: 500,
+                        buttons: {
+                            Ok: function() {
+                                    $( this ).dialog( "close" );
+                                }
                         }
-                    }
+                    });
                 });
             });
-        }
-
-        $(function() {
-            $("button").button().click(createSession);
         });
     </script>
 </head>

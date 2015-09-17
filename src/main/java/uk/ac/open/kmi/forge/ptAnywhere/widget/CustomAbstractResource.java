@@ -5,8 +5,6 @@ import org.apache.commons.logging.LogFactory;
 import org.glassfish.jersey.server.mvc.Viewable;
 import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
-import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;

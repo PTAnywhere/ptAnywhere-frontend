@@ -46,6 +46,23 @@ var packetTracer = (function () {
     }
 
 
+    // Session-level operations
+    /**
+     * Creates a new session and returns the request object.
+     *   @param apiURL the base url of the HTTP API.
+     *   @param success is a callback which received the URL of the new session as a parameter.
+     */
+    function createSession(apiURL, success) {
+        return postJSON(apiURL + "/sessions", null, function(data, status, xhr) {
+            var newSessionURL = xhr.getResponseHeader('Location');
+            success(newSessionURL);
+            $.get(newResource, function(data) {
+                window.location.href =  "p/" + data;
+            });
+        }, {});
+    }
+
+
     // Publicly exposed class with methods which call API resources
 
     /* Begin PTClient */
@@ -186,6 +203,7 @@ var packetTracer = (function () {
         // Why an object instead of having all the functions defined at module level?
         //   1. To make sure that constructor is always called (and the base API URL is not missing).
         //   2. To allow having more than a client in the same application (although I am not sure whether this will be ever needed).
-        Client: PTClient
+        Client: PTClient,
+        newSession: createSession
     };
 })();

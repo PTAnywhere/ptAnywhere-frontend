@@ -17,7 +17,7 @@ public abstract class CustomAbstractResource {
 
 
     static {
-        logger = LogFactory.getLog(WidgetResource.class);
+        logger = LogFactory.getLog(CustomAbstractResource.class);
         properties = new Properties();  // It does not change once the app has been deployed.
     }
 

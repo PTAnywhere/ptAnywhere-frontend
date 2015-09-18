@@ -1,1 +1,1 @@
-<% response.sendRedirect("app/index.html"); %>
+<% response.sendRedirect("app/default.html"); %>

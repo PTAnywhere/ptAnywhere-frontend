@@ -8,8 +8,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-@Path("default")
-public class WidgetResource extends CustomAbstractResource {
+@Path("default.html")
+public class DefaultWidgetResource extends CustomAbstractResource {
 
     static String RELATIVE_ROOT_PATH = "../";
 

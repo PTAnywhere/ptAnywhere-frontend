@@ -20,6 +20,10 @@ var res = {
         // END: Unused
     },
     session: {
+        creating: {
+            title: 'Creating new session...',
+            content: ''
+        },
         unavailable: {
             title: 'Unavailable PT instances',
             content: '<p>Sorry, there are <b>no Packet Tracer instances available</b> right now to initiate a session.</p>' +

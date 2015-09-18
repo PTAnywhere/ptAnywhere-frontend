@@ -745,12 +745,12 @@ var ptAnywhere = (function () {
     })();
     // End deviceModificationDialog module
 
-    function showErrorMessage(error) {
-        widgetSelector.html('<div class="message">' + '<h1>' + error.title + '</h1>' + error.content + '</div>');
+    function showMessage(msg) {
+        widgetSelector.html('<div class="message">' + '<h1>' + msg.title + '</h1>' + msg.content + '</div>');
     }
 
     function loadComponents(sessionURL, settings) {
-        ptClient = new packetTracer.Client(sessionURL, function() { showErrorMessage(res.network.notLoaded); } );
+        ptClient = new packetTracer.Client(sessionURL, function() { showMessage(res.network.notLoaded); } );
 
         networkMap.load('network');  // Always loaded
 
@@ -777,13 +777,13 @@ var ptAnywhere = (function () {
         for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
 
         if (settings.createSession) {
+            showMessage(res.session.creating);
             packetTracer.newSession(apiURL, function(newSessionURL) {
                 $.get(newSessionURL, function(sessionId) {
                     window.location.href =  "?session=" + sessionId;
                 });
             }).fail(function(data) {
-                console.log(data);
-                showErrorMessage(res.session.unavailable);
+                showMessage(res.session.unavailable);
             });
         } else {
             loadComponents(apiURL, settings);

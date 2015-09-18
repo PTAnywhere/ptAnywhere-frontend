@@ -68,19 +68,25 @@ var ptAnywhere = (function () {
             'top': el.css('top')
         };
         this.canvas = canvasEl;
-        // FIXME too many callbacks here, it's too confusing
-        this.creationCallback = function(elementOffset, callback) {
-                                    var x = elementOffset.left;
-                                    var y = elementOffset.top;
-                                    var position = networkMap.getCoordinate(x, y);
-                                    // We don't use the return
-                                    ptClient.addDevice({
-                                        'group': deviceType,
-                                        'x': position.x,
-                                        'y': position.y
-                                    }, callback);
-                                };
-        initDraggable(this);
+        this.deviceType = deviceType;
+        var thisObj = this;
+        this.el.draggable({
+            helper: 'clone',
+            opacity: 0.4,
+            // The following properties interfere with the position I want to capture in the 'stop' event
+            /*revert: true, revertDuration: 2000,  */
+            start: function(event, ui) {
+                $(this).css({'opacity':'0.7'});
+            },
+            stop: function(event, ui) {
+                if (thisObj.collisionsWithCanvas(ui.helper)) {
+                    thisObj.startCreatingIcon(ui);
+                    thisObj.createDevice(ui.offset);
+                } else {
+                    thisObj.moveToStartingPosition();
+                }
+            }
+        });
     }
 
     // Source: http://stackoverflow.com/questions/5419134/how-to-detect-if-two-divs-touch-with-jquery
@@ -112,39 +118,40 @@ var ptAnywhere = (function () {
         });
     };
 
-    function initDraggable(draggableDevice) {
-        var originalObj = draggableDevice;
-        draggableDevice.el.draggable({
-            helper: 'clone',
-            opacity: 0.4,
-            /*revert: true, // It interferes with the position I want to capture in the 'stop' event
-            revertDuration: 2000,*/
-            start: function(event, ui) {
-                $(this).css({'opacity':'0.7'});
-            },
-            /*drag: function(event, ui ) {
-                console.log(event);
-            },*/
-            stop: function(event, ui) {
-                if (originalObj.collisionsWithCanvas(ui.helper)) {
-                    var image = $('<img alt="Temporary image" src="' + ui.helper.attr('src') + '">');
-                    image.css('width', ui.helper.css('width'));
-                    var warning = $('<div class="text-in-image"><span>Creating...</span></div>');
-                    warning.prepend(image);
-                    $('body').append(warning);
-                    warning.css({'position': 'absolute',
-                                 'left': ui.offset.left,
-                                 'top': ui.offset.top});
-                    originalObj.creationCallback(ui.offset, function(data) {
-                        originalObj.moveToStartingPosition();
-                        warning.remove();
-                        networkMap.addNode(data);
-                    });
-                } else {
-                    originalObj.moveToStartingPosition();
-                }
-            }
-        });
+    DraggableDevice.prototype.startCreatingIcon = function(ui) {
+        var image = $('<img alt="Temporary image" src="' + ui.helper.attr('src') + '">');
+        image.css('width', ui.helper.css('width'));
+        var warning = $('<div class="text-in-image"><span>Creating...</span></div>');
+        warning.prepend(image);
+        $('body').append(warning);
+        warning.css({'position': 'absolute',
+                     'left': ui.offset.left,
+                     'top': ui.offset.top});
+        this.creatingIcon = warning;
+    };
+
+    DraggableDevice.prototype.stopCreatingIcon = function(ui) {
+        this.moveToStartingPosition();
+        this.creatingIcon.remove();
+    };
+
+    DraggableDevice.prototype.createDevice = function(elementOffset) {
+        var x = elementOffset.left;
+        var y = elementOffset.top;
+        var position = networkMap.getCoordinate(x, y);
+        var thisObj = this;
+        // We don't use the return
+        return ptClient.addDevice({
+                    'group': this.deviceType,
+                    'x': position.x,
+                    'y': position.y
+                }, function(data) {  // Success
+                    thisObj.stopCreatingIcon();
+                    networkMap.addNode(data);
+                }).
+                fail(function(data) {
+                    thisObj.stopCreatingIcon();
+                });
     };
     // End DraggableDevice class
 

@@ -2,7 +2,10 @@ package uk.ac.open.kmi.forge.ptAnywhere.widget;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import java.util.HashMap;
@@ -14,11 +17,18 @@ public class ConsoleResource extends CustomAbstractResource {
 
     private static Log logger = LogFactory.getLog(ConsoleResource.class);
 
+    private String getReferrerWidgetURL(HttpServletRequest request) {
+        final String referrer = request.getHeader("referer");
+        final int paramsAt = referrer.indexOf("?");
+        if (paramsAt==-1) return referrer;
+        return referrer.substring(0, paramsAt);
+    }
+
     @GET
     @Produces(MediaType.TEXT_HTML)
-    public Response getDevice(@QueryParam("endpoint") String consoleEndpoint) {
+    public Response getDevice(@QueryParam("endpoint") String consoleEndpoint, @Context HttpServletRequest request) {
         final Map<String, Object> map = new HashMap<String, Object>();
-        map.put("websocketURL", consoleEndpoint);
+        map.put("websocketURL", consoleEndpoint + "?widget=" + getReferrerWidgetURL(request));
         return Response.ok(getPreFilled("/console.ftl", map)).
                 link(consoleEndpoint, "endpoint").build();
     }

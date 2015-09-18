@@ -691,7 +691,7 @@ var ptAnywhere = (function () {
                 gwSelector.parent().hide();
             }
 
-            ptClient.getAllPorts(selectedDevice, loadPortsForInterface);
+            ptClient.getAllPorts(selectedDevice, loadPortsForInterface).fail(closeDialog);
         }
 
         function handleModificationSubmit(callback, alwaysCallback) {

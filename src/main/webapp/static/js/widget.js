@@ -48,7 +48,7 @@ var ptAnywhere = (function () {
                 autoOpen: false, height: 400, width: 600, modal: true, draggable: false,
                 close: function() { dialog.html(""); }
             });
-            dialog.html('<div class="iframeWrapper"><iframe class="terminal" src="../console?endpoint=' + node.consoleEndpoint + '"></iframe></div>');
+            dialog.html('<div class="iframeWrapper"><iframe class="terminal" src="console?endpoint=' + node.consoleEndpoint + '"></iframe></div>');
             dialog.dialog( "open" );
         }
 
@@ -158,7 +158,7 @@ var ptAnywhere = (function () {
         var containerSelector = null;
 
         var html = {  // Literals for classes, identifiers, names or paths
-            iconsPath: '../../static/images/',
+            iconsPath: '../static/images/',
             cLoadingIcon: 'loading-icon',
             idLoadingMessage: 'loadingMessage',
         };
@@ -210,7 +210,6 @@ var ptAnywhere = (function () {
                         }
                      },
                     groups: {
-                        // TODO room for improvement, static URL vs relative URL
                         cloudDevice : {
                             shape : 'image',
                             image : html.iconsPath + 'cloud.png',
@@ -746,15 +745,12 @@ var ptAnywhere = (function () {
     })();
     // End deviceModificationDialog module
 
+    function showErrorMessage(error) {
+        widgetSelector.html('<div class="message">' + '<h1>' + error.title + '</h1>' + error.content + '</div>');
+    }
 
-    // Widget configurator/initializer
-    function init(selector, client, customSettings) {
-        widgetSelector = $(selector);
-        ptClient = client;
-        var settings = { // Default values
-            commandLine: true,
-        };
-        for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
+    function loadComponents(sessionURL, settings) {
+        ptClient = new packetTracer.Client(sessionURL, function() { showErrorMessage(res.network.notLoaded); } );
 
         networkMap.load('network');  // Always loaded
 
@@ -768,6 +764,30 @@ var ptAnywhere = (function () {
         linkDialog.create(hiddenComponentContents, "link-devices");
         deviceCreationDialog.create(hiddenComponentContents, "create-device");
         deviceModificationDialog.create(hiddenComponentContents, "modify-device");
+    }
+
+    // Widget configurator/initializer
+    function init(selector, apiURL, customSettings) {
+        widgetSelector = $(selector);
+
+        var settings = { // Default values
+            createSession: false,
+            commandLine: true,
+        };
+        for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
+
+        if (settings.createSession) {
+            packetTracer.newSession(apiURL, function(newSessionURL) {
+                $.get(newSessionURL, function(sessionId) {
+                    window.location.href =  "?session=" + sessionId;
+                });
+            }).fail(function(data) {
+                console.log(data);
+                showErrorMessage(res.session.unavailable);
+            });
+        } else {
+            loadComponents(apiURL, settings);
+        }
     }
 
     // exposed functions and classes

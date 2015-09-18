@@ -13,11 +13,9 @@
     <script type="text/javascript" src="${base}/js/locale/en.js"></script>
     <script type="text/javascript" src="${base}/js/widget.js"></script>
     <script>
-        var api_url = "${session_api}";
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var ptClient = new packetTracer.Client(api_url, function() { $("#widget").html($("#notFound").html()); } );
-            var widget = ptAnywhere.createWidget("#widget", ptClient, {});
+            var widget = ptAnywhere.createWidget("#widget", "${apiUrl}", {createSession: ${createSession}});
             var networkCanvas = $("#network");
             var draggableCloud = new ptAnywhere.DraggableDevice($("#cloud"), networkCanvas, "cloud");
             var draggableRouter = new ptAnywhere.DraggableDevice($("#router"), networkCanvas, "router");
@@ -63,13 +61,6 @@
         <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo" class="cisco-logo"></a>
         <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo" class="ou-logo"></a>
         <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo" class="kmi-logo"></a>
-    </div>
-</div>
-<div id="notFound" style="display: none;">
-    <div class="message">
-        <h1>Topology not found.</h1>
-        <p>The topology could not be loaded probably because the session does not exist (e.g., if it has expired).</p>
-        <p><a href="../index.html">Click here</a> to initiate a new one.</p>
     </div>
 </div>
 </body>

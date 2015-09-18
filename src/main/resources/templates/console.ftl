@@ -101,7 +101,7 @@
             }
 
             $(function() {
-                connect('${websocketURL}');
+                connect('${websocketURL}?widget=http://currentURL');
                 configureEvents();
             });
         </script>

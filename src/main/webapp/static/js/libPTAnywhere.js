@@ -56,9 +56,6 @@ var packetTracer = (function () {
         return postJSON(apiURL + "/sessions", null, function(data, status, xhr) {
             var newSessionURL = xhr.getResponseHeader('Location');
             success(newSessionURL);
-            $.get(newResource, function(data) {
-                window.location.href =  "p/" + data;
-            });
         }, {});
     }
 

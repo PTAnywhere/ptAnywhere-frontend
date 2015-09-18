@@ -19,11 +19,23 @@ var res = {
         editClusterError: 'Clusters cannot be edited.',
         // END: Unused
     },
+    session: {
+        unavailable: {
+            title: 'Unavailable PT instances',
+            content: '<p>Sorry, there are <b>no Packet Tracer instances available</b> right now to initiate a session.</p>' +
+                     '<p>Please, wait a little bit and <b>try again</b>.</p>'
+        }
+    },
     network: {
         loading: 'Loading network...',
         attempt: 'Attempt',
         errorUnavailable: 'Instance not yet available',
         errorTimeout: 'Timeout',
+        notLoaded: {
+            title: 'Topology not found',
+            content: '<p>The topology could not be loaded probably because the session does not exist (e.g., if it has expired).</p>' +
+                     '<p><a href="?session">Click here</a> to initiate a new one.</p>'
+        }
     },
     commandLineDialog: {
         title: 'Command line',

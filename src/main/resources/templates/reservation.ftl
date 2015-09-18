@@ -16,7 +16,6 @@
                         window.location.href =  "p/" + data;
                     });
                 }).fail(function(data) {
-                    console.log(data);
                     $( "#dialog-message" ).dialog({
                         modal: true,
                         width: 500,

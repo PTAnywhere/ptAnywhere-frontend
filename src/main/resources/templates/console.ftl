@@ -87,9 +87,13 @@
 
             function configureEvents() {
                 $('#current').keypress(function(e) {
-                    if (e.which == 13) {
+                    if (e.keyCode == 13) {  // or e.key == 'Enter'
                         ws.send($('#current').text()); /* It has not '\n' */
                         $('#current').text('');
+                    }
+                    if (e.keyCode == 9) {
+                        ws.send($('#current').text());
+                        e.preventDefault();  // Do not tab, stay in this field.
                     }
                 });
 

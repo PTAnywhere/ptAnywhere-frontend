@@ -87,13 +87,15 @@
 
             function configureEvents() {
                 $('#current').keypress(function(e) {
-                    if (e.keyCode == 13) {  // or e.key == 'Enter'
-                        ws.send($('#current').text()); /* It has not '\n' */
+                    if (e.key == 'Enter' || e.key == 'Tab') {  // or if (e.keyCode == 13 || e.keyCode == 9)
+                        var commandPressed = $('#current').text();  /* It does not have '\n' or '\t' at this stage */
+                        if (e.key == 'Tab') {
+                            e.preventDefault();  // Do not tab, stay in this field.
+                            commandPressed += '\t';
+                        }
+                        ws.send(commandPressed);
                         $('#current').text('');
-                    }
-                    if (e.keyCode == 9) {
-                        ws.send($('#current').text());
-                        e.preventDefault();  // Do not tab, stay in this field.
+
                     }
                 });
 

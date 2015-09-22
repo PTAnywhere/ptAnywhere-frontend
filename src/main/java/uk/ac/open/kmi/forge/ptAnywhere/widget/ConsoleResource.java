@@ -19,6 +19,7 @@ public class ConsoleResource extends CustomAbstractResource {
 
     private String getReferrerWidgetURL(HttpServletRequest request) {
         final String referrer = request.getHeader("referer");
+        if (referrer==null) return null;
         final int paramsAt = referrer.indexOf("?");
         if (paramsAt==-1) return referrer;
         return referrer.substring(0, paramsAt);
@@ -28,7 +29,11 @@ public class ConsoleResource extends CustomAbstractResource {
     @Produces(MediaType.TEXT_HTML)
     public Response getDevice(@QueryParam("endpoint") String consoleEndpoint, @Context HttpServletRequest request) {
         final Map<String, Object> map = new HashMap<String, Object>();
-        map.put("websocketURL", consoleEndpoint + "?widget=" + getReferrerWidgetURL(request));
+        final String referrerURL = getReferrerWidgetURL(request);
+        if (referrerURL!=null) {
+            consoleEndpoint = consoleEndpoint + "?widget=" + referrerURL;
+        }
+        map.put("websocketURL", consoleEndpoint);
         return Response.ok(getPreFilled("/console.ftl", map)).
                 link(consoleEndpoint, "endpoint").build();
     }

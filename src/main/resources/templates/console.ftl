@@ -175,13 +175,11 @@
                                 commandPressed += '\t';
                             }
                             ptCommandLine.send(commandPressed);
-                            setCurrentCommand('');
                             cachedCurrentCommand = null;
+                            setCurrentCommand('');
                         } else if (e.key == 'ArrowUp') {
                             e.preventDefault();
-                            if (cachedCurrentCommand==null)
-                                cachedCurrentCommand = getCurrentCommand();
-                            if (showingCached)
+                            if (cachedCurrentCommand==null || showingCached)
                                 cachedCurrentCommand = getCurrentCommand();
                             ptCommandLine.previous();
                         } else if (e.key == 'ArrowDown') {
@@ -190,13 +188,16 @@
                         }
                     });
 
-                    $('#current').keyup(function() {
-                        /* In PT, when '?' is pressed, the command is send as it is. */
-                        var written = getCurrentCommand();
-                        var lastChar = written.slice(-1).charCodeAt(0);
-                        if (lastChar == 63) {
-                            ptCommandLine.send(written); /* It has '?' */
-                            setCurrentCommand('');
+                    $('#current').keyup(function(e) {
+                        if (e.key != 'ArrowUp' && e.key != 'ArrowDown') {
+                            /* In PT, when '?' is pressed, the command is send as it is. */
+                            var written = getCurrentCommand();
+                            var lastChar = written.slice(-1);
+                            if (lastChar == '?') {
+                                ptCommandLine.send(written);  /* It has '?' */
+                                cachedCurrentCommand = null;
+                                setCurrentCommand('');
+                            }
                         }
                     });
 

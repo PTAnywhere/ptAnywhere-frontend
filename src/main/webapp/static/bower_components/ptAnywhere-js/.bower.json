@@ -1,0 +1,38 @@
+{
+  "name": "PTAnywhere-js",
+  "homepage": "https://github.com/PTAnywhere/ptAnywhere-js",
+  "authors": [
+    "Aitor Gómez Goiri <aitor.gomez-goiri@open.ac.uk>"
+  ],
+  "description": "Javascript module with client for PTAnywhere API.",
+  "main": "libPTAnywhere.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/PTAnywhere/ptAnywhere-js.git"
+  },
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jquery": "~1.10.2"
+  },
+  "keywords": [
+    "PTAnywhere",
+    "client",
+    "http",
+    "Packet Tracer"
+  ],
+  "_release": "c2ff170356",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "c2ff170356b21654fdad8f9d41cff3d82101b68a"
+  },
+  "_source": "git://github.com/PTAnywhere/ptAnywhere-js.git",
+  "_target": "*",
+  "_originalSource": "git://github.com/PTAnywhere/ptAnywhere-js.git"
+}

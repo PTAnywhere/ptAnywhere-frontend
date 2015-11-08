@@ -17,12 +17,7 @@
     <script>
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var widget = ptAnywhere.createWidget("#widget", "${apiUrl}", "${base}/bower_components/widget-ui/images/", {createSession: ${createSession}});
-            var networkCanvas = $("#network");
-            var draggableCloud = new ptAnywhere.DraggableDevice($("#cloud"), networkCanvas, "cloud");
-            var draggableRouter = new ptAnywhere.DraggableDevice($("#router"), networkCanvas, "router");
-            var draggableSwitch = new ptAnywhere.DraggableDevice($("#switch"), networkCanvas, "switch");
-            var draggablePc = new ptAnywhere.DraggableDevice($("#pc"), networkCanvas, "pc");
+            var widget = ptAnywhere.createWidget(".widget", "${apiUrl}", "${base}/bower_components/widget-ui/images/", {createSession: ${createSession}});
         });
     </script>
 </head>
@@ -34,30 +29,7 @@
         ${title}
     </h2>
 </div>
-<div id="widget">
-    <div id="network"></div>
-    <fieldset id="creation-fieldset">
-        <legend>To create a new device, drag it to the network map</legend>
-        <div id="creation-menu">
-            <figure>
-                <img id="cloud" alt="cloud" src="${base}/bower_components/widget-ui/images/cloud.png" style="width: 120px;">
-                <figcaption>Cloud</figcaption>
-            </figure>
-            <figure>
-                <img id="router" alt="router" src="${base}/bower_components/widget-ui/images/router.png" style="width: 80px;">
-                <figcaption>Router</figcaption>
-            </figure>
-            <figure>
-                <img id="switch" alt="switch" src="${base}/bower_components/widget-ui/images/switch.png" style="width: 90px;">
-                <figcaption>Switch</figcaption>
-            </figure>
-            <figure>
-                <img id="pc" alt="PC" src="${base}/bower_components/widget-ui/images/PC.png" style="width: 90px;">
-                <figcaption>PC</figcaption>
-            </figure>
-        </div>
-    </fieldset>
-</div>
+<div class="widget"></div>
 <div class="footer">
     <div class="logos">
         <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo" class="cisco-logo"></a>

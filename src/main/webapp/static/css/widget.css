@@ -1,4 +1,4 @@
-html,body {
+html, body {
 	font: 11pt arial;
 	background-color: #fff4de;
 }
@@ -18,7 +18,7 @@ h2 {
 	text-align: right;
 }
 
-input[type=text],pre {
+input[type=text], pre {
 	border: 1px solid lightgray;
 }
 
@@ -26,12 +26,4 @@ pre {
 	margin: 0;
 	padding: 5px;
 	font-size: 10pt;
-}
-
-input[type=text],pre {
-	border: 1px solid lightgray;
-}
-
-fieldset {
-    border: 0px none;
 }

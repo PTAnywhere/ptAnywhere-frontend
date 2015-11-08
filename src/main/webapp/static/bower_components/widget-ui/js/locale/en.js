@@ -53,6 +53,9 @@ var res = {
         title: 'Create new device',
         type: 'Device type',
     },
+    creationMenu: {
+        legend: 'To create a new device, drag it to the network map',
+    },
     modificationDialog: {
         title: 'Modify device',
         globalSettings: 'Global Settings',

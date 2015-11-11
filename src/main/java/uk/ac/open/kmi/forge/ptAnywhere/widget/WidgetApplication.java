@@ -15,9 +15,7 @@ import javax.ws.rs.core.Context;
 @ApplicationPath("/app")
 public class WidgetApplication extends ResourceConfig {
 
-    public static final String APP_TITLE = "title";
-    public static final String APP_ROOT = "path";
-    public static final String API_URL = "apiUrl";
+    public static final String PROPERTIES = "properties";
 
     public WidgetApplication(@Context ServletContext servletContext) {
         super(new ResourceConfig().
@@ -28,9 +26,6 @@ public class WidgetApplication extends ResourceConfig {
         );
 
         // Only an object is created per application, so we are not reading the file over and over again.
-        final PropertyFileManager pfm = new PropertyFileManager();
-        servletContext.setAttribute(APP_TITLE, pfm.getApplicationTitle());
-        servletContext.setAttribute(APP_ROOT, pfm.getApplicationPath());
-        servletContext.setAttribute(API_URL, pfm.getAPIUrl());
+        servletContext.setAttribute(PROPERTIES, new PropertyFileManager());
     }
 }

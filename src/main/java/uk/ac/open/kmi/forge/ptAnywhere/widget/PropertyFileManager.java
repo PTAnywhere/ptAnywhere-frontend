@@ -45,4 +45,12 @@ public class PropertyFileManager {
             return prop.substring(0, prop.length()-1);
         return prop + "/";
     }
+
+    /**
+     * @return
+     *  The url of a certain PKT file to be opened in Packet Tracer.
+     */
+    public String getFileUrl(String fileId) {
+        return this.props.getProperty("ptFile." + fileId);
+    }
 }

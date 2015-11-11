@@ -50,10 +50,12 @@ var packetTracer = (function () {
     /**
      * Creates a new session and returns the request object.
      *   @param apiURL the base url of the HTTP API.
+     *   @param fileToOpen URL of the file to be opened at the beginning.
      *   @param success is a callback which received the URL of the new session as a parameter.
      */
-    function createSession(apiURL, success) {
-        return postJSON(apiURL + '/sessions', null, function(data, status, xhr) {
+    function createSession(apiURL, fileToOpen, success) {
+        var newSession = { fileUrl: fileToOpen };
+        return postJSON(apiURL + '/sessions', newSession, function(data, status, xhr) {
             var newSessionURL = xhr.getResponseHeader('Location');
             success(newSessionURL);
         }, {});

@@ -7,34 +7,36 @@ import javax.servlet.ServletContext;
 import javax.ws.rs.core.Context;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 
 public abstract class CustomAbstractResource {
 
-    private static Log logger;
-    private static Properties properties;
-
-
-    static {
-        logger = LogFactory.getLog(CustomAbstractResource.class);
-        properties = new Properties();  // It does not change once the app has been deployed.
-    }
+    private static Log logger = LogFactory.getLog(CustomAbstractResource.class);
 
     @Context
     ServletContext servletContext;
 
+    protected PropertyFileManager getProperties() {
+        return (PropertyFileManager) servletContext.getAttribute(WidgetApplication.PROPERTIES);
+    }
+
     protected String getApplicationTitle() {
-        return (String) servletContext.getAttribute(WidgetApplication.APP_TITLE);
+        return getProperties().getApplicationTitle();
     }
 
-    String getAppRootURL() {
-        return (String) servletContext.getAttribute(WidgetApplication.APP_ROOT);
+    protected String getAppRootURL() {
+        return getProperties().getApplicationPath();
     }
 
-    String getAPIURL() {
-        return (String) servletContext.getAttribute(WidgetApplication.API_URL);
+    protected String getAPIURL() {
+        return getProperties().getAPIUrl();
     }
+
+
+    protected String getFileUrl(String fileId) {
+        return getProperties().getFileUrl(fileId);
+    }
+
 
     public Viewable getPreFilled(String path) {
         return getPreFilled(path, new HashMap<String, Object>());

@@ -895,6 +895,7 @@ var ptAnywhere = (function () {
         staticsPath = addSlashIfNeeded(pathToStatics);
         var settings = { // Default values
             createSession: false,
+            fileToOpen: null,
             commandLine: true,
         };
         for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
@@ -908,9 +909,9 @@ var ptAnywhere = (function () {
     // Widget configurator/initializer
     function initInteractive(selector, apiURL, pathToStatics, customSettings) {
         var settings = init(selector, pathToStatics, customSettings);
-        if (settings.createSession) {
+        if (settings.createSession && settings.fileToOpen!=null) {
             showMessage(res.session.creating);
-            packetTracer.newSession(apiURL, function(newSessionURL) {
+            packetTracer.newSession(apiURL, settings.fileToOpen, function(newSessionURL) {
                 $.get(newSessionURL, function(sessionId) {
                     window.location.href =  '?session=' + sessionId;
                 });

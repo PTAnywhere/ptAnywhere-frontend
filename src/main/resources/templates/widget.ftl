@@ -17,7 +17,8 @@
     <script>
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var widget = ptAnywhere.createWidget(".widget", "${apiUrl}", "${base}/bower_components/widget-ui/images/", {createSession: ${createSession}});
+            var widget = ptAnywhere.createWidget( '.widget', '${apiUrl}', '${base}/bower_components/widget-ui/images/',
+                                                    { createSession: ${createSession}, fileToOpen: ${fileToOpen} } );
         });
     </script>
 </head>

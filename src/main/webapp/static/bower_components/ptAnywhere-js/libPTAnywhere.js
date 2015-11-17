@@ -5,8 +5,10 @@
  */
 var packetTracer = (function () {
 
-    // Private utility functions
+    var ERROR_UNAVAILABLE = 1;
+    var ERROR_TIMEOUT = 2;
 
+    // Private utility functions
     function requestJSON(verb, url, data, callback, customSettings) {
         var settings = { // Default values
             headers: {
@@ -37,6 +39,9 @@ var packetTracer = (function () {
 
     function deleteHttp(url, callback, customSettings) {
         var settings = {
+            headers: {
+                Accept: 'application/json'
+            },
             type: 'DELETE',
             timeout: 2000,
             success: callback
@@ -90,7 +95,7 @@ var packetTracer = (function () {
                 503: function() {
                         this.tryCount++;
                         if (this.tryCount <= this.retryLimit) {
-                            beforeRetry(this.tryCount, maxRetries, res.network.errorUnavailable);
+                            beforeRetry(this.tryCount, maxRetries, ERROR_UNAVAILABLE);
                             var thisAjax = this;
                             setTimeout(function() { $.ajax(thisAjax); }, delayBetweenRetries);  // retry
                         }
@@ -101,7 +106,7 @@ var packetTracer = (function () {
                     this.tryCount++;
                     console.error('The topology could not be loaded: timeout.');
                     if (this.tryCount <= this.retryLimit) {
-                        beforeRetry(this.tryCount, maxRetries, res.network.errorTimeout);
+                        beforeRetry(this.tryCount, maxRetries, ERROR_TIMEOUT);
                         $.ajax(this); // try again
                     }
                 } else {
@@ -212,7 +217,9 @@ var packetTracer = (function () {
         // Why an object instead of having all the functions defined at module level?
         //   1. To make sure that constructor is always called (and the base API URL is not missing).
         //   2. To allow having more than a client in the same application (although I am not sure whether this will be ever needed).
+        UNAVAILABLE: ERROR_UNAVAILABLE,
+        TIMEOUT: ERROR_TIMEOUT,
         Client: PTClient,
-        newSession: createSession
+        newSession: createSession,
     };
 })();

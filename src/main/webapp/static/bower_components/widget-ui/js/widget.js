@@ -925,7 +925,17 @@ var ptAnywhere = (function () {
             });
             ptClient.getNetwork(function(data) {
                 networkMap.update(data);
-            }, function(tryCount, maxRetries, errorMessage) {
+            }, function(tryCount, maxRetries, errorType) {
+                var errorMessage;
+                switch (errorType) {
+                    case packetTracer.UNAVAILABLE:
+                                errorMessage = res.network.errorUnavailable;
+                                break;
+                    case packetTracer.TIMEOUT:
+                                errorMessage = res.network.errorTimeout;
+                                break;
+                    default: errorMessage = res.network.errorUnknown;
+                }
                 networkMap.error(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
             });
         }

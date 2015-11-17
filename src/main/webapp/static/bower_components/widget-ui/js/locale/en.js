@@ -35,6 +35,7 @@ var res = {
         attempt: 'Attempt',
         errorUnavailable: 'Instance not yet available',
         errorTimeout: 'Timeout',
+        errorUnknown: 'Unknown error',
         notLoaded: {
             title: 'Topology not found',
             content: '<p>The topology could not be loaded probably because the session does not exist (e.g., if it has expired).</p>' +

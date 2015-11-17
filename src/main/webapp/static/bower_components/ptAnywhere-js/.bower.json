@@ -12,6 +12,7 @@
   },
   "ignore": [
     "**/.*",
+    "karma.conf.js",
     "node_modules",
     "bower_components",
     "test",
@@ -20,17 +21,20 @@
   "dependencies": {
     "jquery": "~1.10.2"
   },
+  "devDependencies": {
+    "jasmine": "2.3.4"
+  },
   "keywords": [
     "PTAnywhere",
     "client",
     "http",
     "Packet Tracer"
   ],
-  "_release": "fa0a16aec6",
+  "_release": "ef632d3b94",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "fa0a16aec6d54c7a4b1c5b3c9c0f75591195a998"
+    "commit": "ef632d3b942eac37c5b4968683ed8e5ac5ad15f4"
   },
   "_source": "git://github.com/PTAnywhere/ptAnywhere-js.git",
   "_target": "*",

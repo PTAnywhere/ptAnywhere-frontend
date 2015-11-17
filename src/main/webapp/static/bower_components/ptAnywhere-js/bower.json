@@ -13,6 +13,7 @@
   },
   "ignore": [
     "**/.*",
+    "karma.conf.js",
     "node_modules",
     "bower_components",
     "test",
@@ -20,6 +21,9 @@
   ],
   "dependencies": {
     "jquery": "~1.10.2"
+  },
+  "devDependencies": {
+    "jasmine": "2.3.4"
   },
   "keywords": [
     "PTAnywhere",

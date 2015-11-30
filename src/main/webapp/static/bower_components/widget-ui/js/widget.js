@@ -146,7 +146,8 @@ var ptAnywhere = (function () {
                     'group': this.deviceType,
                     'x': position.x,
                     'y': position.y
-                }, function(data) {  // Success
+                }).
+                done(function(data) {  // Success
                     thisObj.stopCreatingIcon();
                     networkMap.addNode(data);
                 }).
@@ -482,7 +483,8 @@ var ptAnywhere = (function () {
                 'SUBMIT': function() {
                             var fromPortURL = $('.' + clazz.fromInterface + ' option:selected', dialogSelector).val();
                             var toPortURL = $('.' + clazz.toInterface + ' option:selected', dialogSelector).val();
-                            ptClient.createLink(fromPortURL, toPortURL, close, successfulCreationCallback);
+                            ptClient.createLink(fromPortURL, toPortURL, successfulCreationCallback).
+                                       always(close);
                         },
                 Cancel: close
             };
@@ -513,21 +515,20 @@ var ptAnywhere = (function () {
         function loadAvailablePorts() {
             oneLoaded = false;
             ptClient.getAvailablePorts(fromDevice,
-                                                function(ports) {
-                                                    afterLoadingSuccess(ports, true);
-                                                },
-                                                function(errorData) {
-                                                    afterLoadingError(fromDevice, errorData);
-                                                },
-                                                close);
+                                        function(errorData) {
+                                            afterLoadingError(fromDevice, errorData);
+                                        }, close).
+                      done(function(ports) {
+                          afterLoadingSuccess(ports, true);
+                      });
             ptClient.getAvailablePorts(toDevice,
-                                                function(ports) {
-                                                    afterLoadingSuccess(ports, false);
-                                                },
-                                                function(errorData) {
-                                                    afterLoadingError(toDevice, errorData);
-                                                },
-                                                close);
+                                        function(errorData) {
+                                            afterLoadingError(toDevice, errorData);
+                                        },
+                                        close).
+                      done(function(ports) {
+                          afterLoadingSuccess(ports, false);
+                      });
         }
 
         function openDialog(fromD, toD, callback) {
@@ -605,7 +606,7 @@ var ptAnywhere = (function () {
                 y: y
             };
             if (label!="") newDevice['label'] = label;
-            return ptClient.addDevice(newDevice, callback);
+            return ptClient.addDevice(newDevice).done(callback);
         }
 
         function closeDialog() {
@@ -761,7 +762,9 @@ var ptAnywhere = (function () {
                 gwSelector.parent().hide();
             }
 
-            ptClient.getAllPorts(selectedDevice, loadPortsForInterface).fail(closeDialog);
+            ptClient.getAllPorts(selectedDevice).
+                      done(loadPortsForInterface).
+                      fail(closeDialog);
         }
 
         function handleModificationSubmit(callback, alwaysCallback) {

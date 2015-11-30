@@ -269,7 +269,7 @@
         <div id="messages"></div>
         <div id="interactive">
             <span id="lastLine"></span>
-            <span id="current" contentEditable="true">ping 10.0.0.2</span>
+            <span id="current" contentEditable="true"></span>
         </div>
         <a name="bottom"></a>
     </body>

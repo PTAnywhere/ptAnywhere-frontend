@@ -253,10 +253,10 @@ var ptAnywhere = (function () {
                                     if (isInteractive) {
                                         var fromDevice = nodes.get(data.from);
                                         var toDevice = nodes.get(data.to);
-                                        var sCallback = function(edgeId, edgeUrl) {
+                                        var sCallback = function(newLink) {
                                                             edges.add([{
-                                                                id: edgeId,
-                                                                url: edgeUrl,
+                                                                id: newLink.id,
+                                                                url: newLink.url,
                                                                 from: fromDevice.id,
                                                                 to: toDevice.id,
                                                             }]);
@@ -266,7 +266,7 @@ var ptAnywhere = (function () {
                                  },
                         editNode: function(data, callback) {
                                       if (isInteractive) {
-                                          var successUpdatingNode = function(result) { nodes.update(result); };
+                                          var successUpdatingNode = function(modifiedDevice) { nodes.update(modifiedDevice); };
                                           deviceModificationDialog.open(nodes.get(data.id), successUpdatingNode);
                                           callback(data);
                                       }
@@ -483,7 +483,8 @@ var ptAnywhere = (function () {
                 'SUBMIT': function() {
                             var fromPortURL = $('.' + clazz.fromInterface + ' option:selected', dialogSelector).val();
                             var toPortURL = $('.' + clazz.toInterface + ' option:selected', dialogSelector).val();
-                            ptClient.createLink(fromPortURL, toPortURL, successfulCreationCallback).
+                            ptClient.createLink(fromPortURL, toPortURL).
+                                       done(successfulCreationCallback).
                                        always(close);
                         },
                 Cancel: close
@@ -507,27 +508,29 @@ var ptAnywhere = (function () {
             }
         }
 
-        function afterLoadingError(device, data) {
-            console.error('Something went wrong getting this devices\' available ports ' + device.id + '.')
-            showErrorInPanel('Unable to get ' + device.label + ' device\'s ports.');
+        function afterLoadingError(device, errorData) {
+            if (errorData.status==410) {
+                close(); // session expired, error will be shown replacing the map.
+            } else {
+                showErrorInPanel('Unable to get ' + device.label + ' device\'s ports.');
+            }
         }
 
         function loadAvailablePorts() {
             oneLoaded = false;
-            ptClient.getAvailablePorts(fromDevice,
-                                        function(errorData) {
-                                            afterLoadingError(fromDevice, errorData);
-                                        }, close).
+            ptClient.getAvailablePorts(fromDevice).
                       done(function(ports) {
                           afterLoadingSuccess(ports, true);
+                      }).
+                      fail(function(errorData) {
+                          afterLoadingError(fromDevice, errorData);
                       });
-            ptClient.getAvailablePorts(toDevice,
-                                        function(errorData) {
-                                            afterLoadingError(toDevice, errorData);
-                                        },
-                                        close).
+            ptClient.getAvailablePorts(toDevice).
                       done(function(ports) {
                           afterLoadingSuccess(ports, false);
+                      }).
+                      fail(function(errorData) {
+                          afterLoadingError(toDevice, errorData);
                       });
         }
 
@@ -767,13 +770,15 @@ var ptAnywhere = (function () {
                       fail(closeDialog);
         }
 
-        function handleModificationSubmit(callback, alwaysCallback) {
+        function handleModificationSubmit(successCallback, alwaysCallback) {
             // Check the tab
             var selectedTab = $('li.ui-state-active', dialogSelector).attr('aria-controls');
             if (selectedTab==html.tab1) { // General settings
                 var deviceLabel = $('input[name="' + html.nameField + '"]', dialogSelector).val();
                 var defaultGateway = $('input[name="' + html.gatewayField + '"]', dialogSelector).val();
-                return ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway, callback).always(alwaysCallback);
+                return ptClient.modifyDevice(selectedDevice, deviceLabel, defaultGateway).
+                                done(successCallback).
+                                always(alwaysCallback);
             } else if (selectedTab==html.tab2) { // Interfaces
                 var portURL = $('select[name="' + html.iFaceSelector + '"]', dialogSelector).val();
                 var portIpAddress = $('input[name="' + html.ipField + '"]', dialogSelector).val();
@@ -926,21 +931,23 @@ var ptAnywhere = (function () {
             ptClient = new packetTracer.Client(apiURL, function() {
                 showMessage(res.network.notLoaded);
             });
-            ptClient.getNetwork(function(data) {
-                networkMap.update(data);
-            }, function(tryCount, maxRetries, errorType) {
-                var errorMessage;
-                switch (errorType) {
-                    case packetTracer.UNAVAILABLE:
-                                errorMessage = res.network.errorUnavailable;
-                                break;
-                    case packetTracer.TIMEOUT:
-                                errorMessage = res.network.errorTimeout;
-                                break;
-                    default: errorMessage = res.network.errorUnknown;
-                }
-                networkMap.error(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
-            });
+            ptClient.getNetwork(
+                function(tryCount, maxRetries, errorType) {
+                    var errorMessage;
+                    switch (errorType) {
+                        case packetTracer.UNAVAILABLE:
+                                    errorMessage = res.network.errorUnavailable;
+                                    break;
+                        case packetTracer.TIMEOUT:
+                                    errorMessage = res.network.errorTimeout;
+                                    break;
+                        default: errorMessage = res.network.errorUnknown;
+                    }
+                    networkMap.error(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
+                }).
+                done(function(data) {
+                    networkMap.update(data);
+                });
         }
     }
 

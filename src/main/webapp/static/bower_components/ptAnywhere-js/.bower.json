@@ -30,11 +30,11 @@
     "http",
     "Packet Tracer"
   ],
-  "_release": "d35bde49fe",
+  "_release": "0796fb2e79",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "d35bde49fed9d46c717dfe1cb2b0bf4bd7ae83fa"
+    "commit": "0796fb2e79e0aec8c66c7f215dfb4b09c39dc073"
   },
   "_source": "git://github.com/PTAnywhere/ptAnywhere-js.git",
   "_target": "*",

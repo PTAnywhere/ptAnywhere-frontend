@@ -166,8 +166,22 @@
                     $('#current').prop('disabled', !connected);
                 }
 
+                // Fix for Chrome and Safari where e.key is undefined
+                function getKey(keyCode) {
+                    switch(keyCode) {
+                        case 9: return 'Tab';
+                        case 13: return 'Enter';
+                        case 38: return 'ArrowUp';
+                        case 40: return 'ArrowDown';
+                        default: return null;
+                    }
+                }
+
                 function init() {
                     $('#current').keypress(function(e) {
+                        if (typeof e.key === 'undefined') {
+                            e.key = getKey(e.keyCode);
+                        }
                         if (e.key == 'Enter' || e.key == 'Tab') {  // or if (e.keyCode == 13 || e.keyCode == 9)
                             var commandPressed =  getCurrentCommand(); /* It does not have '\n' or '\t' at this stage */
                             if (e.key == 'Tab') {
@@ -189,6 +203,9 @@
                     });
 
                     $('#current').keyup(function(e) {
+                        if (typeof e.key === 'undefined') {
+                            e.key = getKey(e.keyCode);
+                        }
                         if (e.key != 'ArrowUp' && e.key != 'ArrowDown') {
                             /* In PT, when '?' is pressed, the command is send as it is. */
                             var written = getCurrentCommand();

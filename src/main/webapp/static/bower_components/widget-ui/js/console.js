@@ -140,7 +140,7 @@ ptAnywhereWidgets.console = (function () {
 
     function createDOM(parentSelector) {
         var interactiveDiv = $('<div class="' + html.cInteractive + '"></div>');
-        interactiveDiv.append('<span class="' + html.cPrompt + '"></span><span> </span>');
+        interactiveDiv.append('<span class="' + html.cPrompt + '"></span><span>&nbsp;</span>');
         interactiveDiv.append('<span class="' + html.cCurrent + '" contentEditable="true"></span>');
         parentSelector.append('<div class="' + html.cMessages + '"></div>');
         parentSelector.append(interactiveDiv);
@@ -159,47 +159,45 @@ ptAnywhereWidgets.console = (function () {
     }
 
     function configureEventListeners(cmd) {
-      $('.' + html.cCurrent, cmd.selector).keypress(function(e) {
-          if (typeof e.key === 'undefined') {
-              e.key = getKey(e.keyCode);
-          }
-          if (e.key == 'Enter' || e.key == 'Tab') {  // or if (e.keyCode == 13 || e.keyCode == 9)
-              var commandPressed =  cmd.getCommand(); /* It does not have '\n' or '\t' at this stage */
-              if (e.key == 'Tab') {
-                  e.preventDefault();  // Do not tab, stay in this field.
-                  commandPressed += '\t';
-              }
-              ptAnywhere.websocket.send(commandPressed);
-              cmd.clearCached();
-          } else if (e.key == 'ArrowUp') {
-              e.preventDefault();
-              if (!cmd.isCaching() || cmd.isShowingCached())
-                  cmd.updateCached();
-              ptAnywhere.websocket.previous();
-          } else if (e.key == 'ArrowDown') {
-              e.preventDefault();
-              ptAnywhere.websocket.next();
-          }
-      });
+        $('.' + html.cInteractive, cmd.selector).keydown(function(e) {
+            if (typeof e.key === 'undefined') {
+                e.key = getKey(e.keyCode);
+            }
+            if (e.key == 'Enter' || e.key == 'Tab') {  // or if (e.keyCode == 13 || e.keyCode == 9)
+                var commandPressed =  cmd.getCommand(); /* It does not have '\n' or '\t' at this stage */
+                if (e.key == 'Tab') {
+                    e.preventDefault();  // Do not tab, stay in this field.
+                    commandPressed += '\t';
+                }
+                ptAnywhere.websocket.send(commandPressed);
+                cmd.clearCached();
+            }
+        });
 
-      $('.' + html.cCurrent, cmd.selector).keyup(function(e) {
-          if (typeof e.key === 'undefined') {
-              e.key = getKey(e.keyCode);
-          }
-          if (e.key != 'ArrowUp' && e.key != 'ArrowDown') {
-              /* In PT, when '?' is pressed, the command is send as it is. */
-              var written = cmd.getCommand();
-              var lastChar = written.slice(-1);
-              if (lastChar == '?') {
-                  ptAnywhere.websocket.send(written);  /* It has '?' */
-                  cmd.clearCached();
-              }
-          }
-      });
+        $('.' + html.cInteractive, cmd.selector).keyup(function(e) {
+            if (typeof e.key === 'undefined') {
+                e.key = getKey(e.keyCode);
+            }
+            if (e.key == 'ArrowUp') {
+                  if (!cmd.isCaching() || cmd.isShowingCached())
+                      cmd.updateCached();
+                  ptAnywhere.websocket.previous();
+            } else if (e.key == 'ArrowDown') {
+                ptAnywhere.websocket.next();
+            } else {
+                /* In PT, when '?' is pressed, the command is send as it is. */
+                var written = cmd.getCommand();
+                var lastChar = written.slice(-1);
+                if (lastChar == '?') {
+                    ptAnywhere.websocket.send(written);  /* It has '?' */
+                    cmd.clearCached();
+                }
+            }
+        });
 
-      $('.' + html.cInteractive, cmd.selector).click(function() {
-          $('.' + html.cCurrent, cmd.selector).focus();
-      });
+        $('.' + html.cInteractive, cmd.selector).click(function() {
+            $('.' + html.cCurrent, cmd.selector).focus();
+        });
     }
 
     function init(selector) {

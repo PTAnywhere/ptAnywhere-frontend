@@ -1,0 +1,29 @@
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font: 10pt monospace, Helvetica, Arial;
+}
+
+.messages {
+  margin: 0;
+  padding: 0;
+  white-space: pre;
+}
+
+.interactive {
+  width: 100%;
+}
+
+.current {
+  min-width: 100px;
+  height: 10pt;
+}
+
+.current:focus, .current:hover {
+    outline: 0;
+}

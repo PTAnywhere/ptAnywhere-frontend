@@ -6,7 +6,10 @@
     "Aitor Gómez Goiri <aitor.gomez-goiri@open.ac.uk>"
   ],
   "description": "Javascript module with client for PTAnywhere API.",
-  "main": "libPTAnywhere.js",
+  "main": [
+    "js/libPTAnywhere-http.js",
+    "js/libPTAnywhere-websocket.js"
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/PTAnywhere/ptAnywhere-js.git"

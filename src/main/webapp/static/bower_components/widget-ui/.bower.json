@@ -7,7 +7,9 @@
   "description": "Javascript module with GUI helpers to build PTAnywhere widgets.",
   "main": [
     "js/widget.js",
-    "css/widget.css"
+    "js/console.js",
+    "css/widget.css",
+    "css/console.css"
   ],
   "repository": {
     "type": "git",
@@ -30,11 +32,11 @@
     "widget",
     "user interface"
   ],
-  "_release": "590ba5e9f6",
+  "_release": "cc8ca43241",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "590ba5e9f6177d8894c382bf54d4e4bc6257e71f"
+    "commit": "cc8ca432411463ae33766de744a72af2fc95193f"
   },
   "_source": "git://github.com/PTAnywhere/widget-ui.git",
   "_target": "*",

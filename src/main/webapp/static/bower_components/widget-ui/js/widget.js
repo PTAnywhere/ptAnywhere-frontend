@@ -1,8 +1,14 @@
+// Define module if needed.
+if (typeof(ptAnywhereWidgets) === 'undefined') {
+    var ptAnywhereWidgets = {};
+}
 
-// Widget creator module and its submodules
+/**
+ * Widget creator module and its submodules
+ */
 // The Revealing Module Pattern
 // http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript
-var ptAnywhere = (function () {
+ptAnywhereWidgets.all = (function () {
 
     var widgetSelector;
     var ptClient;  // JS client of the HTTP API
@@ -432,7 +438,7 @@ var ptAnywhere = (function () {
             loaded: 'loaded',
             error: 'error',
             errorMsg: 'error-msg',
-        }
+        };
 
 
         function createDOM(parentSelector, dialogId) {
@@ -862,7 +868,7 @@ var ptAnywhere = (function () {
             menuSelector = createDOM();
             for (var i in draggableElements) {
                 var el = draggableElements[i];
-                new ptAnywhere.DraggableDevice($('.' + el.element, menuSelector), dragToCanvas, el.element);
+                new DraggableDevice($('.' + el.element, menuSelector), dragToCanvas, el.element);
             }
             return menuSelector;
         }
@@ -919,7 +925,7 @@ var ptAnywhere = (function () {
         var settings = init(selector, pathToStatics, customSettings);
         if (settings.createSession && settings.fileToOpen!=null) {
             showMessage(res.session.creating);
-            packetTracer.newSession(apiURL, settings.fileToOpen, function(newSessionURL) {
+            ptAnywhere.http.newSession(apiURL, settings.fileToOpen, function(newSessionURL) {
                 $.get(newSessionURL, function(sessionId) {
                     window.location.href =  '?session=' + sessionId;
                 });
@@ -928,17 +934,17 @@ var ptAnywhere = (function () {
             });
         } else {
             loadComponents(settings, true);
-            ptClient = new packetTracer.Client(apiURL, function() {
+            ptClient = new ptAnywhere.http.Client(apiURL, function() {
                 showMessage(res.network.notLoaded);
             });
             ptClient.getNetwork(
                 function(tryCount, maxRetries, errorType) {
                     var errorMessage;
                     switch (errorType) {
-                        case packetTracer.UNAVAILABLE:
+                        case ptAnywhere.http.UNAVAILABLE:
                                     errorMessage = res.network.errorUnavailable;
                                     break;
-                        case packetTracer.TIMEOUT:
+                        case ptAnywhere.http.TIMEOUT:
                                     errorMessage = res.network.errorTimeout;
                                     break;
                         default: errorMessage = res.network.errorUnknown;
@@ -967,22 +973,8 @@ var ptAnywhere = (function () {
 
     // exposed functions and classes
     return {
-        createWidget: initInteractive,
+        create: initInteractive,
         createNonInteractiveWidget: initNonInteractive,
         DraggableDevice: DraggableDevice,
     };
 })();
-
-
-
-// From: http://www.jquerybyexample.net/2012/06/get-url-parameters-using-jquery.html
-function getURLParameter(sParam) {
-    var sPageURL = window.location.search.substring(1);
-    var sURLVariables = sPageURL.split('&');
-    for (var i = 0; i < sURLVariables.length; i++) {
-        var sParameterName = sURLVariables[i].split('=');
-        if (sParameterName[0] == sParam) {
-            return sParameterName[1];
-        }
-    }
-}

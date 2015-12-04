@@ -1,9 +1,12 @@
+// Define module if needed.
+if (typeof(ptAnywhere) === 'undefined') {
+    var ptAnywhere = {};
+}
 
-// http://addyosmani.com/resources/essentialjsdesignpatterns/book/#revealingmodulepatternjavascript
 /**
  * Client for PacketTracer's HTTP API.
  */
-var packetTracer = (function () {
+ptAnywhere.http = (function () {
 
     /** @const */ var ERROR_UNAVAILABLE = 1;
     /** @const */ var ERROR_TIMEOUT = 2;

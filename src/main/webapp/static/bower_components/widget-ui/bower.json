@@ -1,6 +1,6 @@
 {
   "name": "PTAnywhere-widget-ui",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "homepage": "https://github.com/PTAnywhere/widget-ui",
   "authors": [
     "Aitor Gómez Goiri <aitor.gomez-goiri@open.ac.uk>"
@@ -8,11 +8,13 @@
   "description": "Javascript module with GUI helpers to build PTAnywhere widgets.",
   "main": [
     "js/widget.js",
-    "css/widget.css"
+    "js/console.js",
+    "css/widget.css",
+    "css/console.css"
   ],
   "repository": {
-		"type": "git",
-		"url": "git://github.com/PTAnywhere/widget-ui.git"
+    "type": "git",
+    "url": "git://github.com/PTAnywhere/widget-ui.git"
   },
   "ignore": [
     "**/.*",

@@ -1,24 +1,24 @@
 /* General Layout */
 
 div.widget-header {
-    margin: 8px;
+  margin: 8px;
 }
 
 div.widget-header img {
-    vertical-align: middle;
-    height: 28px;
-    margin-right: 5px;
+  vertical-align: middle;
+  height: 28px;
+  margin-right: 5px;
 }
 
 .widget {
-	width: 100%;
-    background-color: #ffffff;
-    border-radius: 20px;
-    border: 2px solid lightgray;
+  width: 100%;
+  background-color: #ffffff;
+  border-radius: 20px;
+  border: 2px solid #4a96ad;
 }
 
 .widget div.message {
-	width: 60%;
+  width: 60%;
 	margin: 5% auto;
 	text-align: center;
 }
@@ -30,14 +30,14 @@ div.logos {
 
 div.logos img {
 	display: inline-block;
-    height: 48px;
-    margin-right: 20px;
+  height: 48px;
+  margin-right: 20px;
 }
 
 .network {
 	width: 100%;
 	height: 500px;
-	border-bottom: 4px solid lightgray;
+	border-bottom: 2px solid #7fa8b4;
 }
 
 .network .loading-icon {
@@ -52,22 +52,23 @@ div.logos img {
 }
 
 
-/* Edit menu */
+/* Network edit menu */
 
 div.vis-network div.vis-edit-mode {
-    margin: 0;
-    padding: 0;  /* Sth changes in the dev vis.js css */
-    height: 30px;
+  margin: 0;
+  padding: 0;  /* Sth changes in the dev vis.js css */
+  height: 30px;
 }
 
 div.vis-network div.vis-manipulation {
-    background: none;
-    padding: 10px 0 0 10px; /* Sth changes in the dev vis.js css */
-    height: 40px;
+  background: none;
+  padding: 10px 0 0 10px; /* Sth changes in the dev vis.js css */
+  height: 50px;
+  border-color: #afcfd8;
 }
 
 div.vis-network div.vis-close {
-    margin: 6px 12px 0 0;
+  margin: 6px 12px 0 0;
 }
 
 div.vis-network div.vis-manipulation div.vis-separator-line {
@@ -79,8 +80,8 @@ div.vis-network div.vis-manipulation div.vis-separator-line {
 /* Drag and drop creation menu */
 
 fieldset.creation-menu {
-    border: 0px none;
-    padding: 10px;
+  border: 0px none;
+  padding: 10px;
 }
 
 fieldset.creation-menu legend {
@@ -119,47 +120,15 @@ fieldset.creation-menu figure figcaption {
 }
 
 .text-in-image>span {
-    position: absolute;
-    top: 30%;
-    left: 0;
-    width: 100%;
-    text-align: center;
+  position: absolute;
+  top: 30%;
+  left: 0;
+  width: 100%;
+  text-align: center;
 }
 
 .text-in-image>img {
-    opacity: 0.6;
-}
-
-
-/* select with custom icons */
-
-.ui-selectmenu-menu select {
-	width: 200px;
-}
-.ui-selectmenu-menu .ui-menu.customicons .ui-menu-item {
-	padding: 0.5em 0 0.5em 3em;
-}
-.ui-selectmenu-menu .ui-menu.customicons .ui-menu-item .ui-icon {
-	height: 24px;
-	width: 36px;
-	top: 0.1em;
-}
-
-.ui-icon.cloud {
-	background: url("../images/cloud.png") 0 0 no-repeat;
-	background-size: 36px 24px;
-}
-.ui-icon.pc {
-	background: url("../images/PC.png") 0 0 no-repeat;
-	background-size: 36px 24px;
-}
-.ui-icon.router {
-	background: url("../images/router.png") 0 0 no-repeat;
-	background-size: 36px 24px;
-}
-.ui-icon.switch {
-	background: url("../images/switch.png") 0 0 no-repeat;
-	background-size: 36px 24px;
+  opacity: 0.6;
 }
 
 #device-type-button {
@@ -169,30 +138,8 @@ fieldset.creation-menu figure figcaption {
 
 /* Modification dialog */
 
-#modify-device {
-	padding: 0;
-}
-
-.modify-dialog-tabs {
-	border: 0;
-}
-
-.modify-dialog-tabs .ui-widget-header {
-	border-width: 0 0 1px 0;
-	background-image: none;
-	background-color: transparent;
-}
-
-.modify-dialog-tabs .ui-corner-all {
-	border-bottom-left-radius: 0px;
-	border-bottom-right-radius: 0px;
-	border-bottom-width: 0px;
-}
-
-.modify-dialog-tabs .ui-tabs-panel {
-	border-top-left-radius: 6px;
-	border-top-right-radius: 6px;
-	border-top-width: 1px;
+#modify-device .tab-content{
+	padding-top: 20px;
 }
 
 
@@ -201,15 +148,15 @@ fieldset.creation-menu figure figcaption {
 /* Ugly fix for CSS on the iPad. */
 /*  http://stackoverflow.com/questions/16937070/iframe-size-with-css-on-ios */
 div.iframeWrapper {
-    overflow: auto;
-    -webkit-overflow-scrolling: touch;
-    width: 100%;
-    height: 100%;
+  overflow: auto;
+  -webkit-overflow-scrolling: touch;
+  width: 100%;
+  height: 100%;
 }
 
 iframe.terminal {
-    width: 100%;
-    height: 100%;
-    background-color: white;
-    border: 0;
+  width: 100%;
+  height: 100%;
+  background-color: white;
+  border: 0;
 }

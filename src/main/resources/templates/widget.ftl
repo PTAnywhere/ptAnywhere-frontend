@@ -6,15 +6,9 @@
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css">
-
     <#include "headers/jquery-with-ui.ftl">
+    <#include "headers/bootstrap.ftl">
     <#include "headers/visjs.ftl">
-
-    <!-- Bootstrap JS -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
 
     <!-- PTAnywhere -->
     <script type="text/javascript" src="${base}/bower_components/ptAnywhere-js/js/libPTAnywhere-http.js"></script>

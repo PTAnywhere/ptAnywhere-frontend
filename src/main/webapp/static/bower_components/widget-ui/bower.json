@@ -26,7 +26,8 @@
   "dependencies": {
     "vis": "~4.7.0",
     "jquery-ui": "~1.11.4",
-    "jquery-ui-touch-punch": "git://github.com/furf/jquery-ui-touch-punch.git"
+    "jquery-ui-touch-punch": "git://github.com/furf/jquery-ui-touch-punch.git",
+    "bootstrap": "3.3.6"
   },
   "keywords": [
     "PTAnywhere",

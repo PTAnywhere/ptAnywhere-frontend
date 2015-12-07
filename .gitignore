@@ -28,3 +28,9 @@ release.properties
 
 # End-to-end tests' dependencies
 tests/node_modules
+
+
+# JavaScript dependencies with Bower
+
+src/main/webapp/static/bower_components/bootstrap/*
+!src/main/webapp/static/bower_components/bootstrap/dist/

@@ -1,9 +1,10 @@
 html, body {
 	background-color: #f5f3ee;
+	height:100%;
 }
 
-html.plain, html.plain>body {
-	background-color: #ffffff;
+.container-fluid {
+    height:100%;
 }
 
 h1 {
@@ -15,14 +16,4 @@ h2 {
 	font-size: 100%;
 	margin: 5px 0;
 	text-align: right;
-}
-
-input[type=text], pre {
-	border: 1px solid lightgray;
-}
-
-pre {
-	margin: 0;
-	padding: 5px;
-	font-size: 10pt;
 }

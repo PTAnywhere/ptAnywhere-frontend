@@ -29,15 +29,19 @@
 
 <body>
 <div class="container-fluid">
-    <div class="widget-header">
-        <h2>
+    <div class="row widget-header">
+        <h5 class="col-md-12 text-right">
             <img src="${base}/images/PTAnywhere-logo.png" alt="PacketTracer icon" >
             ${title}
-        </h2>
+        </h5>
     </div>
-    <div class="widget"></div>
-    <div class="footer">
-        <div class="logos">
+    <div class="row widget-body">
+        <div class="col-md-12">
+            <div class="widget"></div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12 text-center logos">
             <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo" class="cisco-logo"></a>
             <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo" class="ou-logo"></a>
             <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo" class="kmi-logo"></a>

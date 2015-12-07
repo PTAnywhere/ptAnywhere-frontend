@@ -1,54 +1,54 @@
 /* General Layout */
 
-div.widget-header {
-  margin: 8px;
-}
-
 div.widget-header img {
   vertical-align: middle;
   height: 28px;
   margin-right: 5px;
 }
 
+.widget-body {
+  height: 80%;
+}
+
+.widget-body>div {
+  height: 100%;
+}
+
 .widget {
-  width: 100%;
+  position: relative;
   background-color: #ffffff;
   border-radius: 20px;
   border: 2px solid #4a96ad;
+  height: 100%;
 }
 
 .widget div.message {
-  width: 60%;
-	margin: 5% auto;
-	text-align: center;
+  margin: 5% auto;
 }
 
 div.logos {
-	margin-top:10px;
-	text-align:center;
+  margin-top:10px;
 }
 
 div.logos img {
-	display: inline-block;
   height: 48px;
   margin-right: 20px;
 }
 
 .network {
-	width: 100%;
-	height: 500px;
-	border-bottom: 2px solid #7fa8b4;
+  width: 100%;
+  height: 100%;
 }
 
 .network .loading-icon {
-	display: block;
-	padding-top: 190px;
-	margin-left: auto;
-	margin-right: auto;
+  display: block;
+  padding-top: 190px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .network .map {
-	height: 100%;
+  height: 100%;
 }
 
 
@@ -72,51 +72,33 @@ div.vis-network div.vis-close {
 }
 
 div.vis-network div.vis-manipulation div.vis-separator-line {
-	width: 0;
-	margin: 5px 0 0 0;
+  width: 0;
+  margin: 5px 0 0 0;
 }
 
 
 /* Drag and drop creation menu */
 
-fieldset.creation-menu {
-  border: 0px none;
-  padding: 10px;
+div.creation-menu {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 0 10px 10px 10px;
+  border-top: 2px solid #7fa8b4;
+  background-color: white;
+  border-bottom-right-radius:20px;
+  border-bottom-left-radius:20px;
 }
 
-fieldset.creation-menu legend {
+div.creation-menu fieldset legend {
   border: 0;
   margin-top: 10px;  /* TODO check why parent's padding does not affect it */
   font-size: 14px;
 }
 
-fieldset.creation-menu div {
-	width: 50%;
-	margin: 0px auto;
-}
-
-fieldset.creation-menu figure {
-	display:table-cell;
-	width: 23%;
-	margin: 0;
-	text-align: center;
-}
-
-fieldset.creation-menu figure img {
-	width: 90px;
-}
-
-fieldset.creation-menu figure img.cloud {
-	width: 120px;
-}
-
-fieldset.creation-menu figure img.router {
-	width: 80px;
-}
-
-fieldset.creation-menu figure figcaption {
-	margin-top: 5%;
-	display: block;
+div.creation-menu fieldset figure figcaption {
+  margin-top: 5%;
+  display: block;
 }
 
 .text-in-image>span {
@@ -131,15 +113,11 @@ fieldset.creation-menu figure figcaption {
   opacity: 0.6;
 }
 
-#device-type-button {
-	vertical-align: middle;
-}
-
 
 /* Modification dialog */
 
 #modify-device .tab-content{
-	padding-top: 20px;
+  padding-top: 20px;
 }
 
 

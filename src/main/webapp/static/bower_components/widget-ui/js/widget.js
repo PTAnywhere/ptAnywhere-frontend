@@ -276,17 +276,17 @@ ptAnywhereWidgets.all = (function () {
                         },
                         routerDevice : {
                             shape : 'image',
-                            image : staticsPath + 'router.png',
+                            image : staticsPath + 'router_cropped.png',
                             size: 45,
                         },
                         switchDevice : {
                             shape : 'image',
-                            image : staticsPath + 'switch.png',
+                            image : staticsPath + 'switch_cropped.png',
                             size: 35,
                         },
                         pcDevice : {
                             shape : 'image',
-                            image : staticsPath + 'PC.png',
+                            image : staticsPath + 'pc_cropped.png',
                             size: 45,
                         }
                     },
@@ -742,13 +742,13 @@ ptAnywhereWidgets.all = (function () {
                               '      </div>' +
                               '      <hr>' +
                               '      <div class="clearfix form-group ' + html.cIFaceDetails + '">' +
-                              '        <div>' +
+                              '        <div class="clearfix form-group">' +
                               '          <label for="' + dialogId + '-idaddr" class="col-md-3">' + res.modificationDialog.ipAddress + ': </label>' +
                               '          <div class="col-md-9">' +
                               '            <input type="text" name="' + html.ipField + '" id="' + dialogId + '-idaddr" class="form-control">' +
                               '          </div>' +
                               '        </div>' +
-                              '        <div>' +
+                              '        <div class="clearfix form-group">' +
                               '          <label for="' + dialogId + '-subnet" class="col-md-3">' + res.modificationDialog.subnetMask + ': </label>'+
                               '          <div class="col-md-9">' +
                               '            <input type="text" name="' + html.subnetField + '" id="' + dialogId + '-subnet" class="form-control">' +
@@ -877,25 +877,29 @@ ptAnywhereWidgets.all = (function () {
             { element: 'cloud', icon: 'cloud.png', caption: 'Cloud'},
             { element: 'router', icon: 'router.png', caption: 'Router'},
             { element: 'switch', icon: 'switch.png', caption: 'Switch'},
-            { element: 'pc', icon: 'PC.png', caption: 'Pc'},
+            { element: 'pc', icon: 'pc.png', caption: 'Pc'},
         ];
 
         function getFigureDOM(draggableElement) {
-            return '<figure><img class="' + draggableElement.element + '" alt="' +
+            return '<figure class="col-md-3 col-sm-3 col-xs-3 text-center"><img class="' + draggableElement.element + '" alt="' +
                    draggableElement.element + '" ' + 'src="' + staticsPath +
                    draggableElement.icon + '"><figcaption>' +
                    draggableElement.caption + '</figcaption></figure>';
         }
 
         function createDOM() {
-            var fieldset = $('<fieldset class="creation-menu"></fieldset>');
+            var fieldset = $('<fieldset></fieldset>');
             fieldset.append('<legend>' + res.creationMenu.legend + '</legend>');
-            var figuresHolder = $('<div></div>');
+            var rowHolder = $('<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12"></div>');
+            var figuresHolder = $('<div class="row"></div>');
             for (var i in draggableElements) {
                 figuresHolder.append(getFigureDOM(draggableElements[i]));
             }
-            fieldset.append(figuresHolder);
-            return fieldset;
+            rowHolder.append(figuresHolder);
+            fieldset.append(rowHolder);
+            var menu = $('<div class="creation-menu"></div>');
+            menu.append(fieldset);
+            return menu;
         }
 
         function createMenu(parentSelector, dragToCanvas) {
@@ -951,7 +955,11 @@ ptAnywhereWidgets.all = (function () {
     }
 
     function showMessage(msg) {
-        widgetSelector.html('<div class="message"><h1>' + msg.title + '</h1>' + msg.content + '</div>');
+        widgetSelector.html('<div class="row message">' +
+                            '  <div class="col-md-8 col-md-offset-2 text-center">' +
+                            '    <h1>' + msg.title + '</h1>' + msg.content +
+                            '  </div>' +
+                            '</div>');
     }
 
     // Widget configurator/initializer

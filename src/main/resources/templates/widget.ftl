@@ -30,21 +30,25 @@
 <body>
 <div class="container-fluid">
     <div class="row widget-header">
-        <h5 class="col-md-12 text-right">
-            <img src="${base}/images/PTAnywhere-logo.png" alt="PacketTracer icon" >
+        <div class="col-md-12 text-right">
+            <img src="${base}/images/PTAnywhere-logo.png" alt="PacketTracer icon">
             ${title}
-        </h5>
+        </div>
     </div>
     <div class="row widget-body">
         <div class="col-md-12">
             <div class="widget"></div>
         </div>
     </div>
-    <div class="row">
-        <div class="col-md-12 text-center logos">
-            <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo" class="cisco-logo"></a>
-            <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo" class="ou-logo"></a>
-            <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo" class="kmi-logo"></a>
+    <div class="row widget-footer text-center">
+        <div class="col-md-offset-3 col-md-2 col-sm-offset-1 col-sm-3 col-xs-12">
+            <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo"></a>
+        </div>
+        <div class="col-md-2 col-sm-3 col-xs-12">
+            <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo"></a>
+        </div>
+        <div class="col-md-2 col-sm-3 col-xs-12">
+            <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo"></a>
         </div>
     </div>
 </div>

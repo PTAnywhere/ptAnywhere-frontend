@@ -40,15 +40,19 @@
             <div class="widget"></div>
         </div>
     </div>
-    <div class="row widget-footer text-center">
-        <div class="col-sm-offset-1 col-sm-3 col-xs-12">
-            <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo"></a>
-        </div>
-        <div class="col-sm-3 col-xs-12">
-            <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo"></a>
-        </div>
-        <div class="col-sm-3 col-xs-12">
-            <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo"></a>
+    <div class="row widget-footer">
+        <div class="col-md-offset-2 col-md-8 col-sm-12">
+            <div class="row text-center">
+                <div class="col-sm-4 col-xs-12">
+                    <a href="https://www.netacad.com"><img src="${base}/images/Cisco_academy_logo.png" alt="Cisco logo"></a>
+                </div>
+                <div class="col-sm-4 col-xs-12">
+                    <a href="http://www.open.ac.uk"><img src="${base}/images/ou_logo.png" alt="Open University logo"></a>
+                </div>
+                <div class="col-sm-4 col-xs-12">
+                    <a href="http://kmi.open.ac.uk"><img src="${base}/images/kmi_logo.png" alt="Knowledge Media Institute logo"></a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

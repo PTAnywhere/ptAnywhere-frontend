@@ -33,11 +33,11 @@
     "widget",
     "user interface"
   ],
-  "_release": "723d459107",
+  "_release": "41dd727930",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "723d4591070a3cbeaa4f2a6ca316bbbf210a31bd"
+    "commit": "41dd72793070c270a14ef5e5f69a5e384fadbefb"
   },
   "_source": "git://github.com/PTAnywhere/widget-ui.git",
   "_target": "*",

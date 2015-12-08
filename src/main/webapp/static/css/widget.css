@@ -1,21 +1,21 @@
 html, body {
-	background-color: #f5f3ee;
-	height:100%;
+  background-color: #f5f3ee;
+  height:100%;
 }
 
 .container-fluid {
-    height:100%;
+  height:100%;
 }
 
 h1 {
-	font-size: 150%;
-	margin: 5px 0;
+  font-size: 150%;
+  margin: 5px 0;
 }
 
 h2 {
-	font-size: 100%;
-	margin: 5px 0;
-	text-align: right;
+  font-size: 100%;
+  margin: 5px 0;
+  text-align: right;
 }
 
 
@@ -47,7 +47,6 @@ h2 {
 }
 
 .widget-header>div img {
-  /*vertical-align: middle;*/
   height: 100%;
   min-height: 14px;  /* It can be as small as the font of the text nearby*/
   max-height: 40px;
@@ -56,7 +55,6 @@ h2 {
 
 
 /** FOOTER **/
-
 
 .widget-footer>div {
   height: 100%;

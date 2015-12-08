@@ -889,8 +889,8 @@ ptAnywhereWidgets.all = (function () {
 
         function createDOM() {
             var fieldset = $('<fieldset></fieldset>');
-            fieldset.append('<legend>' + res.creationMenu.legend + '</legend>');
-            var rowHolder = $('<div class="col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2 col-xs-12"></div>');
+            fieldset.tooltip({title: res.creationMenu.legend});
+            var rowHolder = $('<div class="col-md-8 col-md-offset-2 col-sm-10 col-sm-offset-1 col-xs-12"></div>');
             var figuresHolder = $('<div class="row"></div>');
             for (var i in draggableElements) {
                 figuresHolder.append(getFigureDOM(draggableElements[i]));

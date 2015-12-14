@@ -105,6 +105,7 @@ ptAnywhere.http = (function () {
 
     /**
      * Retrieves the current network topology.
+     *   @param {function(Network)} onSuccess
      *   @param {function(number, number, number)} beforeRetry
      *          Function which will be called before a each retry.
      *          The first parameter is the current retry count.
@@ -113,7 +114,7 @@ ptAnywhere.http = (function () {
      *          the previous attempt failed: UNAVAILABLE or TIMEOUT.
      *   @return {jQuery.Deferred}
      */
-    PTClient.prototype.getNetwork = function(beforeRetry) {
+    PTClient.prototype.getNetwork = function(onSuccess, beforeRetry) {
         var maxRetries = 5;
         var delayBetweenRetries = 2000;
         var sessionExpirationCallback = this.customSettings.statusCode['410'];
@@ -138,14 +139,14 @@ ptAnywhere.http = (function () {
                     console.error('The topology could not be loaded: timeout.');
                     if (this.tryCount <= this.retryLimit) {
                         beforeRetry(this.tryCount, maxRetries, ERROR_TIMEOUT);
-                        $.ajax(this); // try again
+                        $.ajax(this).done(onSuccess);  // try again
                     }
                 } else {
                    console.error('The topology could not be loaded: ' + errorThrown + '.');
                 }
             }
         };
-        return getJSON(this.apiURL + '/network', moreSpecificSettings);
+        return getJSON(this.apiURL + '/network', moreSpecificSettings).done(onSuccess);
     };
 
     /**

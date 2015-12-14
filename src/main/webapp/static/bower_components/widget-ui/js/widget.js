@@ -79,13 +79,13 @@ ptAnywhereWidgets.all = (function () {
 
         function createDOM(parentSelector) {
             dialogSelector = $('<div class="modal fade" tabindex="-1" role="dialog" aria-labelledby="cmdModal"></div>');
-            var modal = '<div class="modal-dialog" role="document">' +
-                        '  <div class="modal-content">' +
-                        '    <div class="modal-header">' +
+            var modal = '<div class="modal-dialog" role="document" style="height: 90%;">' +
+                        '  <div class="modal-content" style="height: 100%;">' +
+                        '    <div class="modal-header" style="height: 10%;">' +
                         '      <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>' +
                         '      <h4 class="modal-title" id="cmdModal">' + res.commandLineDialog.title + '</h4>' +
                         '    </div>' +
-                        '    <div class="modal-body">' +
+                        '    <div class="modal-body" style="height: 89%;">' +
                         '    </div>' +
                         '  </div>' +
                         '</div>';
@@ -980,6 +980,9 @@ ptAnywhereWidgets.all = (function () {
                 showMessage(res.network.notLoaded);
             });
             ptClient.getNetwork(
+                function(data) {
+                    networkMap.update(data);
+                },
                 function(tryCount, maxRetries, errorType) {
                     var errorMessage;
                     switch (errorType) {
@@ -992,9 +995,6 @@ ptAnywhereWidgets.all = (function () {
                         default: errorMessage = res.network.errorUnknown;
                     }
                     networkMap.error(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
-                }).
-                done(function(data) {
-                    networkMap.update(data);
                 });
         }
     }

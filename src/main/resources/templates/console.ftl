@@ -12,7 +12,7 @@
     <script type="text/javascript" src="${base}/bower_components/widget-ui/js/console.js"></script>
     <script>
         $(function() {
-            var cmd = ptAnywhereWidgets.console.create('#commandLine');
+            var cmd = ptAnywhereWidgets.console.create('.commandLine');
             ptAnywhere.websocket.start('${websocketURL}',
                                         cmd.getConnectionCallback(),
                                         cmd.getUpdateCallback(),
@@ -22,6 +22,6 @@
     </script>
 </head>
 <body>
-    <div id="commandLine"></div>
+    <div class="commandLine"></div>
 </body>
 </html>

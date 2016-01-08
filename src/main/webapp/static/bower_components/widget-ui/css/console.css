@@ -5,7 +5,7 @@
   box-sizing: border-box;
 }
 
-body {
+.commandLine {
   font: 10pt monospace, Helvetica, Arial;
 }
 

@@ -275,7 +275,7 @@ ptAnywhere.http = (function () {
         // FIXME issue #4.
         return getJSON(link.url, this.customSettings).
                   fail(function(data) {
-                      console.error('Something went wrong getting this link: ' + linkUrl + '.');
+                      console.error('Something went wrong getting this link: ' + link.url + '.');
                   }).
                   then(function(data) {
                     return deleteHttp(data.endpoints[0] + 'link', this.customSettings).

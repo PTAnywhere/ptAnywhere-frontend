@@ -236,7 +236,7 @@ ptAnywhereWidgets.all = (function () {
                 var selectedPort = modificationDialog.setPorts(ports);
                 if (selectedPort!=null) {
                     updateInterfaceInformation(selectedPort);
-                    modificationDialog.showLoading();
+                    modificationDialog.showLoaded();
                 }
                 modificationDialog.getPortSelect().unbind();  // To avoid accumulation of change listeners from other calls
                 modificationDialog.getPortSelect().change(function () {
@@ -253,7 +253,7 @@ ptAnywhereWidgets.all = (function () {
             }
 
             function updateEditForm() {
-                modificationDialog.showLoaded();
+                modificationDialog.showLoading();
 
                 modificationDialog.setDeviceName(selectedDevice.label);
                 if (selectedDevice.hasOwnProperty('defaultGateway')) {

@@ -1338,16 +1338,49 @@ ptAnywhereWidgets.all = (function () {
     })();
 
 
+    var sessionTracker = (function () {
+        function getLastSession() {
+            return window.localStorage.getItem("lastSession");
+        }
+
+        function setLastSession(sessionId) {
+            window.localStorage.setItem("lastSession", sessionId);
+        }
+
+        return {
+            getLast: getLastSession,
+            setLast: setLastSession,
+        };
+    })();
+
+
+
     function getSettings(customSettings) {
         var settings = { // Default values
-            createSession: false,
-            fileToOpen: null,
+            // It can also be set to false to disable session creation
+            sessionCreation: {
+                fileToOpen: null,
+                tracked: true,
+            },
             commandLine: true,
             backdrop: true,
             backdropArea: null,
             dialogWrapper: 'body',  // Class to apply to
         };
-        for (var attrName in customSettings) { settings[attrName] = customSettings[attrName]; }  // merge/override
+        for (var attrName in customSettings) {
+            // In the future: for all the fields with object values
+            if (attrName=='sessionCreation' && customSettings[attrName]) {
+                // If field exist and it is an object (i.e., not false)
+                for (var subAttrName in settings[attrName]) {
+                    // The fields not specified in customSettings preserve their default value.
+                    if (subAttrName in customSettings[attrName]) {
+                        settings[attrName][subAttrName] = customSettings[attrName][subAttrName];
+                    }
+                }
+            } else {
+                settings[attrName] = customSettings[attrName];
+            }
+        }
         return settings;
     }
 
@@ -1375,15 +1408,25 @@ ptAnywhereWidgets.all = (function () {
     function initInteractive(selector, apiURL, pathToStatics, customSettings) {
         var settings = getSettings(customSettings);
         main.init(selector);
-        if (settings.createSession && settings.fileToOpen!=null) {
-            main.showMessage(res.session.creating);
-            ptAnywhere.http.newSession(apiURL, settings.fileToOpen, function(newSessionURL) {
-                $.get(newSessionURL, function(sessionId) {
-                    window.location.href =  '?session=' + sessionId;
-                });
-            }).fail(function(data) {
-                main.showMessage(res.session.unavailable);
-            });
+        if (settings.sessionCreation) {
+            if (settings.sessionCreation.fileToOpen!=null) {
+                main.showMessage(res.session.creating);
+                var previousSession = null;
+                if (settings.sessionCreation.tracked) {
+                    previousSession = sessionTracker.getLast();
+                }
+                ptAnywhere.http.newSession(apiURL, settings.sessionCreation.fileToOpen, previousSession,
+                    function(newSessionURL) {
+                        $.get(newSessionURL, function(sessionId) {
+                            if (settings.sessionCreation.tracked) {
+                                sessionTracker.setLast(sessionId);
+                            }
+                            window.location.href = '?session=' + sessionId;
+                        });
+                    }).fail(function(data) {
+                      main.showMessage(res.session.unavailable);
+                    });
+            }
         } else {
             // JS client of the HTTP API
             var ptClient = new ptAnywhere.http.Client(apiURL, function() {

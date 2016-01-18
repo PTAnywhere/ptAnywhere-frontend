@@ -59,12 +59,18 @@ ptAnywhere.http = (function () {
      *          Base URL of the HTTP API.
      *   @param {string} fileToOpen
      *          URL of the file to be opened at the beginning of the session.
+     *   @param {string} previousSessionId
+     *          A session id used by the same user previously or null if it is
+     *          unknown or you do not want to specify it.
      *   @param {function(string)} onSuccess
      *          Function which will receive the URL of the new session as a parameter.
      *   @return {jQuery.Deferred}
      */
-    function createSession(apiURL, fileToOpen, onSuccess) {
+    function createSession(apiURL, fileToOpen, previousSessionId, onSuccess) {
         var newSession = { fileUrl: fileToOpen };
+        if (previousSessionId!=null) {
+            newSession.sameUserAsInSession = previousSessionId;
+        }
         return postJSON(apiURL + '/sessions', newSession, {}).
                   done(function(newSessionURL, status, xhr) {
                     // The following does not work in Jasmine.

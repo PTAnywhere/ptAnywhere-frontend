@@ -14,12 +14,10 @@ abstract class DefaultWidgetInterfaceResource extends CustomAbstractResource {
         final Map<String, Object> map = new HashMap<String, Object>();
         map.put("title", getApplicationTitle());
         if (sessionId==null || sessionId.equals("")) {
-            map.put("createSession", "true");
-            map.put("fileToOpen", "'" + getFileUrl(fileId) + "'");
+            map.put("sessionCreation", "{ fileToOpen: '" + getFileUrl(fileId) + "' }");
             map.put("apiUrl", getAPIURL());
         } else {
-            map.put("createSession", "false");
-            map.put("fileToOpen", "null");
+            map.put("sessionCreation", "false");
             map.put("apiUrl", getAPIURL() + "/sessions/" + sessionId);
         }
         return Response.ok(getPreFilled("/widget.ftl", map)).

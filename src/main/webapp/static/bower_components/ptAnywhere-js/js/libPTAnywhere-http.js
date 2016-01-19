@@ -135,7 +135,7 @@ ptAnywhere.http = (function () {
                         if (this.tryCount <= this.retryLimit) {
                             beforeRetry(this.tryCount, maxRetries, ERROR_UNAVAILABLE);
                             var thisAjax = this;
-                            setTimeout(function() { $.ajax(thisAjax); }, delayBetweenRetries);  // retry
+                            setTimeout(function() { $.ajax(thisAjax).done(onSuccess); }, delayBetweenRetries);  // retry
                         }
                     },
             },
@@ -148,6 +148,8 @@ ptAnywhere.http = (function () {
                         $.ajax(this).done(onSuccess);  // try again
                     }
                 } else {
+                    // Errors handled by 'statusCode' also receive an 'error'
+                    // callback before.
                    console.error('The topology could not be loaded: ' + errorThrown + '.');
                 }
             }

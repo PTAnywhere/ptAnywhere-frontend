@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Element</title>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
+    <script>
+        if (!window.jQuery) {
+            console.log("Error externally loading jQuery from CDN, including local copy.");
+            document.write('<script src="${base}/bower_components/jquery/jquery.min.js"><\/script>');
+        }
+    </script>
+    <script>
+        $(function() {
+            var url = '../app/memorable';
+            var lastSessionId = localStorage.getItem('lastSession');
+            if (lastSessionId!=null) {
+                url += '?seed=' + lastSessionId;
+            }
+            var element = $.get(url, function(data) {
+                $('h1').text(data);
+            });
+        });
+    </script>
+</head>
+<body>
+<h1>Loading...</h1>
+</body>
+</html>

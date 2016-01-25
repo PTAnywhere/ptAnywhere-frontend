@@ -1451,6 +1451,10 @@ ptAnywhereWidgets.all = (function () {
                         default: errorMessage = res.network.errorUnknown;
                     }
                     main.map.error(errorMessage + '. ' + res.network.attempt + ' ' + tryCount + '/' + maxRetries + '.');
+                },
+                function() {
+                    // Show error
+                    main.showMessage(res.network.notLoaded);
                 });
         }
     }

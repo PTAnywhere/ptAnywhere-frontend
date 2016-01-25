@@ -71,7 +71,7 @@ ptAnywhere.http = (function () {
         if (previousSessionId!=null) {
             newSession.sameUserAsInSession = previousSessionId;
         }
-        return postJSON(apiURL + '/sessions', newSession, {}).
+        return postJSON(apiURL + '/sessions', newSession, {timeout: 10000}).
                   done(function(newSessionURL, status, xhr) {
                     // The following does not work in Jasmine.
                     //var newSessionURL = xhr.getResponseHeader('Location');
@@ -98,7 +98,7 @@ ptAnywhere.http = (function () {
      *   @param {string} sessionURL
      *          URL of the session that the client will use.
      *   @param {function()} onSessionExpired
-   *            Callback to be called when the session expires.
+     *            Callback to be called when the session expires.
      */
     function PTClient(sessionURL, onSessionExpired) {
         this.apiURL = sessionURL;
@@ -107,6 +107,21 @@ ptAnywhere.http = (function () {
                 410: onSessionExpired
             }
         };
+    }
+
+    function retry(ajaxRequest, onSuccess, beforeRetry, afterAllRetries, errorType, delayBetweenRetries) {
+        if (ajaxRequest.tryCount <= ajaxRequest.retryLimit) {
+           beforeRetry(ajaxRequest.tryCount, ajaxRequest.retryLimit, errorType);
+           // retry
+           if (delayBetweenRetries>0) {
+              setTimeout(function() { $.ajax(ajaxRequest).done(onSuccess); }, delayBetweenRetries);
+           } else {
+              $.ajax(ajaxRequest).done(onSuccess);
+           }
+        } else {
+            // The library gives up retrying it.
+            afterAllRetries();
+        }
     }
 
     /**
@@ -118,11 +133,13 @@ ptAnywhere.http = (function () {
      *          The second is the maximum number of retries.
      *          The third parameter corresponds with the type of error why
      *          the previous attempt failed: UNAVAILABLE or TIMEOUT.
+     *   @param {function()} afterAllRetries
+     *          Function which will be called after all retries have been
+     *          unsuccesfully tried.
      *   @return {jQuery.Deferred}
      */
-    PTClient.prototype.getNetwork = function(onSuccess, beforeRetry) {
+    PTClient.prototype.getNetwork = function(onSuccess, beforeRetry, afterAllRetries) {
         var maxRetries = 5;
-        var delayBetweenRetries = 2000;
         var sessionExpirationCallback = this.customSettings.statusCode['410'];
         var moreSpecificSettings = {
             tryCount : 0,
@@ -132,24 +149,17 @@ ptAnywhere.http = (function () {
                 410: sessionExpirationCallback,
                 503: function() {
                         this.tryCount++;
-                        if (this.tryCount <= this.retryLimit) {
-                            beforeRetry(this.tryCount, maxRetries, ERROR_UNAVAILABLE);
-                            var thisAjax = this;
-                            setTimeout(function() { $.ajax(thisAjax).done(onSuccess); }, delayBetweenRetries);  // retry
-                        }
-                    },
+                        retry(this, onSuccess, beforeRetry, afterAllRetries, ERROR_UNAVAILABLE, 2000);
+                     },
             },
             error : function(xhr, textStatus, errorThrown ) {
                 if (textStatus == 'timeout') {
-                    this.tryCount++;
                     console.error('The topology could not be loaded: timeout.');
-                    if (this.tryCount <= this.retryLimit) {
-                        beforeRetry(this.tryCount, maxRetries, ERROR_TIMEOUT);
-                        $.ajax(this).done(onSuccess);  // try again
-                    }
+                    this.tryCount++;
+                    retry(this, onSuccess, beforeRetry, afterAllRetries, ERROR_TIMEOUT, 0);
                 } else {
-                    // Errors handled by 'statusCode' also receive an 'error'
-                    // callback before.
+                    // Errors handled by 'statusCode' also receive an 'error' callback before.
+                    // So this log will be shown before firing any of the errors in 'statusCode'.
                    console.error('The topology could not be loaded: ' + errorThrown + '.');
                 }
             }

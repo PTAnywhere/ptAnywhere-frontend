@@ -91,13 +91,17 @@ ptAnywhere.websocket = (function () {
         } else if ('MozWebSocket' in window) {
             ws = new MozWebSocket(target);
         } else {
-            alert('WebSocket is not supported by this browser.');
+            msg = 'WebSocket is not supported by this browser.';
+            console.error(msg);
+            callbacks.warning(msg);
             return;
         }
+
         ws.onopen = function () {
-            console.log('Info: WebSocket connection opened.');
+            console.log('WebSocket connection opened.');
             callbacks.connected();
         };
+
         ws.onmessage = function (event) {
             var msg = JSON.parse(event.data);
             if (msg.hasOwnProperty('prompt')) {  // At the beginning of the session
@@ -112,12 +116,15 @@ ptAnywhere.websocket = (function () {
                 });
             }
         };
+
         ws.onerror = function (event) {
-            console.error('Info: WebSocket error, Code: ' + event.code + (event.reason == '' ? '' : ', Reason: ' + event.reason));
-            callbacks.warning('Websocket error. ' +  event.reason);
+            console.error('WebSocket error:');
+            console.error(event);
+            callbacks.warning('Websocket error.');
         };
+
         ws.onclose = function (event) {
-            console.log('Info: WebSocket connection closed, Code: ' + event.code + (event.reason == '' ? '' : ', Reason: ' + event.reason));
+            console.warn('WebSocket connection closed, Code: ' + event.code + (event.reason == '' ? '' : ', Reason: ' + event.reason));
             callbacks.warning('Connection closed. ' +  event.reason);
         };
     }

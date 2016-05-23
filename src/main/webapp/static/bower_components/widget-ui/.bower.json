@@ -23,7 +23,7 @@
     "tests"
   ],
   "dependencies": {
-    "vis": "~4.7.0",
+    "vis": "~4.16.1",
     "jquery-ui": "~1.11.4",
     "jquery-ui-touch-punch": "git://github.com/furf/jquery-ui-touch-punch.git",
     "bootstrap": "3.3.6"
@@ -33,11 +33,11 @@
     "widget",
     "user interface"
   ],
-  "_release": "28df65c338",
+  "_release": "ff3fe7fd57",
   "_resolution": {
     "type": "branch",
     "branch": "master",
-    "commit": "28df65c338ebc96e240117adf14cc3d5453c0e6c"
+    "commit": "ff3fe7fd570a0e440d4a100bc7e634d34164be0e"
   },
   "_source": "git://github.com/PTAnywhere/widget-ui.git",
   "_target": "*",

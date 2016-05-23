@@ -23,10 +23,10 @@
     "tests"
   ],
   "dependencies": {
-    "jquery": "~1.10.2"
+    "jquery": "~1.12.4"
   },
   "devDependencies": {
-    "jasmine": "2.3.4"
+    "jasmine": "2.4.1"
   },
   "keywords": [
     "PTAnywhere",

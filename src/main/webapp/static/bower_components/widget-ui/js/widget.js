@@ -47,8 +47,8 @@ ptAnywhereWidgets.all = (function () {
             });
 
             map.onAddLink(function(fromDevice, toDevice) {
-                linkCreation.start(fromDevice, toDevice, function(newLink) {  // If success...
-                    map.connect(fromDevice, toDevice, newLink.id, newLink.url);
+                linkCreation.start(fromDevice, toDevice, function(newLink, toLabel, fromLabel) {  // If success...
+                    map.connect(fromDevice, toDevice, newLink.id, newLink.url, toLabel, fromLabel);
                 });
             });
 
@@ -62,8 +62,8 @@ ptAnywhereWidgets.all = (function () {
                 ptClient.removeDevice(device);
             });
 
-            map.onDeleteLink(function(device) {
-                ptClient.removeLink( device );
+            map.onDeleteLink(function(edge) {
+                ptClient.removeLink(edge);
             });
         }
 
@@ -199,7 +199,9 @@ ptAnywhereWidgets.all = (function () {
                 linkDialog.getPrimaryButton().click(function() {
                     ptClient.createLink(linkDialog.getFromPortURL(),
                                         linkDialog.getToPortURL()).
-                               done(successfulCreationCallback).
+                               done(function(link) {
+                                    successfulCreationCallback(link, linkDialog.getFromPortName(), linkDialog.getToPortName());
+                               }).
                                always(function() {
                                    linkDialog.close();
                                });
@@ -584,12 +586,69 @@ ptAnywhereWidgets.all = (function () {
                 return nodes.get(selected.nodes[0]);
             }
 
+            function isOnlyOneEdgeSelected(event) {
+                return event.nodes.length==0 && event.edges.length==1;
+            }
+
+            function isNodeSelected(event) {
+                return event.nodes.length>0;
+            }
+
+            function isShowingEndpoint(node) {
+                return node.label.indexOf('\n') != -1;
+            }
+
+            function showEndpointsInEdge(edge) {
+                var fromNode = nodes.get(edge.from);
+                var toNode = nodes.get(edge.to);
+                if ( !isShowingEndpoint(fromNode) ) {
+                    fromNode.label = fromNode.label + '\n(' + edge.fromLabel + ')';
+                    nodes.update(fromNode);
+                }
+                if ( !isShowingEndpoint(toNode) ) {
+                    toNode.label = toNode.label + '\n(' + edge.toLabel + ')';
+                    nodes.update(toNode);
+                }
+            }
+
+            function hideEndpointsInEdge(edge) {
+                var fromNode = nodes.get(edge.from);
+                var toNode = nodes.get(edge.to);
+                if ( isShowingEndpoint(fromNode) ) {
+                    fromNode.label = fromNode.label.split('\n')[0];
+                    nodes.update(fromNode);
+                }
+                if ( isShowingEndpoint(toNode) ) {
+                    toNode.label = toNode.label.split('\n')[0];
+                    nodes.update(toNode);
+                }
+            }
+
+            function hideEndpointsInSelectedEdges(event) {
+                for (var i = 0; i < event.edges.length; i++) {
+                    hideEndpointsInEdge( edges.get(event.edges[i]) );
+                }
+            }
+
             function drawTopology() {
                 // Create network element if needed (only the first time)
                 if (network==null) {
                     // create a network
                     var visData = { nodes : nodes, edges : edges };
                     network = new vis.Network($('.map', containerSelector).get(0), visData, options);
+                    network.on('select', function(event) {
+                        if ( isOnlyOneEdgeSelected(event) ) {
+                            var edge = edges.get(event.edges[0]);
+                            showEndpointsInEdge(edge);
+                        } else if ( isNodeSelected(event) ) {
+                            hideEndpointsInSelectedEdges(event);
+                        }
+                    });
+                    network.on('deselectEdge', function(event) {
+                        if ( isOnlyOneEdgeSelected(event.previousSelection) ) {
+                            hideEndpointsInSelectedEdges(event.previousSelection);
+                        }
+                    });
                 }
             }
 
@@ -633,8 +692,10 @@ ptAnywhereWidgets.all = (function () {
              *      It can be an object with an 'id' field or the device name (i.e., an string).
              * @arg linkId (optional, string) identifier of the new link.
              * @arg linkUrl (optional, string) URL associated to the new link.
+              * @arg fromPortName (optional, string) Name of the port associated with the fromDevice of the new link.
+              * @arg toPortName (optional, string) URL associated to the new link.
              */
-            function connect(fromDevice, toDevice, linkId, linkUrl) {
+            function connect(fromDevice, toDevice, linkId, linkUrl, fromPortName, toPortName) {
                 // FIXME unify the way to connect devices
                 var newEdge;
                 if (typeof fromDevice === 'string'  && typeof toDevice === 'string') {
@@ -650,6 +711,12 @@ ptAnywhereWidgets.all = (function () {
                 if (linkUrl !== undefined) {
                     newEdge.url = linkUrl;
                 }
+                if (fromPortName !== undefined) {
+                    newEdge.fromLabel = fromPortName;
+                }
+                if (toPortName !== undefined) {
+                    newEdge.toLabel = toPortName;
+                }
                 edges.add(newEdge);
             }
 
@@ -657,7 +724,6 @@ ptAnywhereWidgets.all = (function () {
                 var ids = [getByName(names[0]).id, getByName(names[1]).id];
                 var ret = edges.get({
                     filter: function (item) {
-
                         return ( (item.from == ids[0]) && (item.to == ids[1]) ) ||
                                ( (item.from == ids[1]) && (item.to == ids[0]) );
                     }
@@ -754,7 +820,9 @@ ptAnywhereWidgets.all = (function () {
                 options.manipulation.deleteEdge = function(data, callback) {
                     // Always (data.nodes.length==0) && (data.edges.length>0)
                     // TODO There might be more than an edge selected...
-                    interactionCallback( edges.get(data.edges[0]) );
+                    var edge = edges.get(data.edges[0]);
+                    hideEndpointsInEdge(edge);
+                    interactionCallback(edge);
                     // This callback is important, otherwise it received 3 consecutive onDelete events.
                     callback(data);
                 };
@@ -788,7 +856,7 @@ ptAnywhereWidgets.all = (function () {
                 onAddLink: onAddLink,
                 onEditDevice: onEditDevice,
                 onDeleteDevice: onDeleteDevice,
-                onDeleteLink: onDeleteLink,
+                onDeleteLink: onDeleteLink
            };
 
         })();
@@ -1090,6 +1158,14 @@ ptAnywhereWidgets.all = (function () {
 
             Dialog.prototype.setToDevice = function(deviceName) {
                 $('.' + clazz.toName, this.selector).text(deviceName);
+            };
+
+            Dialog.prototype.getFromPortName = function() {
+                return $('.' + clazz.fromInterface + ' option:selected', this.selector).text();
+            };
+
+            Dialog.prototype.getToPortName = function() {
+                return $('.' + clazz.toInterface + ' option:selected', this.selector).text();
             };
 
             Dialog.prototype.getFromPortURL = function() {

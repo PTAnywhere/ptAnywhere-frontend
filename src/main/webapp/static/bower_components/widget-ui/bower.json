@@ -24,7 +24,7 @@
     "tests"
   ],
   "dependencies": {
-    "vis": "~4.7.0",
+    "vis": "~4.16.1",
     "jquery-ui": "~1.11.4",
     "jquery-ui-touch-punch": "git://github.com/furf/jquery-ui-touch-punch.git",
     "bootstrap": "3.3.6"

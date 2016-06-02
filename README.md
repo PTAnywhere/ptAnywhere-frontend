@@ -4,6 +4,12 @@ JavaScript library for the [PT Anywhere HTTP API](https://github.com/PTAnywhere/
 Both components are being developed as part of the [FORGE](http://ict-forge.eu/) project.
 For more information about _PT Anywhere_, please check [its official website](http://pt-anywhere.kmi.open.ac.uk).
 
+# Cloning it
+
+Note that this project uses submodules.
+Therefore, it is best if you use the _recursive_ option while cloning the repository.
+
+    git clone --recursive [this project]
 
 ## Usage
 

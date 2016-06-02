@@ -31,18 +31,21 @@ tests/node_modules
 
 
 # JavaScript dependencies with Bower
+## Custom libraries: already added as git submodules
+src/main/webapp/static/js/third/ptAnywhere-js/*
+src/main/webapp/static/js/third/widget-ui/*
 ## Bootstrap
-src/main/webapp/static/bower_components/bootstrap/*
-!src/main/webapp/static/bower_components/bootstrap/dist/
+src/main/webapp/static/js/third/bootstrap/*
+!src/main/webapp/static/js/third/bootstrap/dist/
 ## jQuery
-src/main/webapp/static/bower_components/jquery/*
-!src/main/webapp/static/bower_components/jquery/jquery.min.js
+src/main/webapp/static/js/third/jquery/*
+!src/main/webapp/static/js/third/jquery/jquery.min.js
 ## jQuery UI
-src/main/webapp/static/bower_components/jquery-ui/* 
-!src/main/webapp/static/bower_components/jquery-ui/ui/minified/core.min.js
-!src/main/webapp/static/bower_components/jquery-ui/ui/minified/widget.min.js
-!src/main/webapp/static/bower_components/jquery-ui/ui/minified/mouse.min.js
-!src/main/webapp/static/bower_components/jquery-ui/ui/minified/draggable.min.js
+src/main/webapp/static/js/third/jquery-ui/*
+!src/main/webapp/static/js/third/jquery-ui/ui/minified/core.min.js
+!src/main/webapp/static/js/third/jquery-ui/ui/minified/widget.min.js
+!src/main/webapp/static/js/third/jquery-ui/ui/minified/mouse.min.js
+!src/main/webapp/static/js/third/jquery-ui/ui/minified/draggable.min.js
 ## vis.js
-src/main/webapp/static/bower_components/vis/*
-!src/main/webapp/static/bower_components/vis/dist/
+src/main/webapp/static/js/third/vis/*
+!src/main/webapp/static/js/third/vis/dist/

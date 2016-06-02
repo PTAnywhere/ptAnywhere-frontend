@@ -5,7 +5,7 @@
             // Assumption: if JS fails, so will do the CSS because they are hosted by the same CDN.
             // If only the CSS fails, no solution possible.
             console.log("Error externally loading vis.js from CDN, including local copy.");
-            document.write('<link href="${base}/bower_components/vis/dist/vis.min.css" rel="stylesheet" type="text/css"/>');
-            document.write('<script src="${base}/bower_components/vis/dist/vis-network.min.js"><\/script>');
+            document.write('<link href="${base}/js/third/vis/dist/vis.min.css" rel="stylesheet" type="text/css"/>');
+            document.write('<script src="${base}/js/third/vis/dist/vis-network.min.js"><\/script>');
         }
     </script>

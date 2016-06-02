@@ -11,17 +11,17 @@
     <#include "headers/visjs.ftl">
 
     <!-- PTAnywhere -->
-    <script type="text/javascript" src="${base}/bower_components/ptAnywhere-js/js/libPTAnywhere-http.js"></script>
+    <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-http.js"></script>
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
-    <link href="${base}/bower_components/widget-ui/css/widget.css" rel="stylesheet" type="text/css"/>
+    <link href="${base}/js/custom/widget-ui/css/widget.css" rel="stylesheet" type="text/css"/>
 
-    <script type="text/javascript" src="${base}/bower_components/widget-ui/js/locale/en.js"></script>
-    <script type="text/javascript" src="${base}/bower_components/widget-ui/js/widget.js"></script>
+    <script type="text/javascript" src="${base}/js/custom/widget-ui/js/locale/en.js"></script>
+    <script type="text/javascript" src="${base}/js/custom/widget-ui/js/widget.js"></script>
     <script>
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var widget = ptAnywhereWidgets.all.create( '.widget', '${apiUrl}', '${base}/bower_components/widget-ui/images/',
+            var widget = ptAnywhereWidgets.all.create( '.widget', '${apiUrl}', '${base}/js/custom/widget-ui/images/',
                                                     { sessionCreation: ${sessionCreation} } );
         });
     </script>

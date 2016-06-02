@@ -2,6 +2,6 @@
     <script>
         if (!window.jQuery) {
             console.log("Error externally loading jQuery from CDN, including local copy.");
-            document.write('<script src="${base}/bower_components/jquery/jquery.min.js"><\/script>');
+            document.write('<script src="${base}/js/third/jquery/jquery.min.js"><\/script>');
         }
     </script>

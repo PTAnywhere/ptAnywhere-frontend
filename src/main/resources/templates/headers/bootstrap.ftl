@@ -5,8 +5,8 @@
         var bootstrap3_enabled = (typeof $().emulateTransitionEnd == 'function');
         if (!bootstrap3_enabled) {
             console.log("Error externally loading Boostrap from CDN, including local copy.");
-            document.write('<link rel="stylesheet" href="${base}/bower_components/bootstrap/dist/css/bootstrap.min.css">');
-            document.write('<link rel="stylesheet" href="${base}/bower_components/bootstrap/dist/css/bootstrap-theme.min.css">');
-            document.write('<script src="${base}/bower_components/bootstrap/dist/js/bootstrap.min.js"><\/script>');
+            document.write('<link rel="stylesheet" href="${base}/js/third/bootstrap/dist/css/bootstrap.min.css">');
+            document.write('<link rel="stylesheet" href="${base}/js/third/bootstrap/dist/css/bootstrap-theme.min.css">');
+            document.write('<script src="${base}/js/third/bootstrap/dist/js/bootstrap.min.js"><\/script>');
         }
     </script>

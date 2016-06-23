@@ -4,10 +4,10 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>uk.ac.open.kmi.forge.ptAnywhere</groupId>
-    <artifactId>ptAnywhere-widgets</artifactId>
+    <artifactId>ptAnywhere-frontend</artifactId>
     <packaging>war</packaging>
-    <version>0.4-SNAPSHOT</version>
-    <name>PTAnywhere widgets</name>
+    <version>2.0.1</version>
+    <name>PT Anywhere frontend application</name>
 
 
     <properties>

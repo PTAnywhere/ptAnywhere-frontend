@@ -14,14 +14,13 @@
     <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-http.js"></script>
 
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
-    <link href="${base}/js/custom/widget-ui/css/widget.css" rel="stylesheet" type="text/css"/>
+    <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css"/>
 
-    <script type="text/javascript" src="${base}/js/custom/widget-ui/js/locale/en.js"></script>
-    <script type="text/javascript" src="${base}/js/custom/widget-ui/js/widget.js"></script>
+    <script type="text/javascript" src="${base}/js/ptAnywhere.min.js"></script>
     <script>
         $(function() {
             // Global, better if it is passed by parameter to widget creator...
-            var widget = ptAnywhereWidgets.all.create( '.widget', '${apiUrl}', '${base}/js/custom/widget-ui/images/',
+            var widget = ptAnywhereWidgets.all.create( '.widget', '${apiUrl}', '${base}/images/',
                                                     { sessionCreation: ${sessionCreation} } );
         });
     </script>

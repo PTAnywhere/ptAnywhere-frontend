@@ -45,6 +45,7 @@ public abstract class CustomAbstractResource {
 
     public Viewable getPreFilled(String path, Map<String, Object> map) {
         map.put("base", getAppRootURL() + "static");
+        map.put("dependencies", getAppRootURL() + "static/js/vendors");
         map.put("api", getAPIURL());
         return (new Viewable(path, map));
     }

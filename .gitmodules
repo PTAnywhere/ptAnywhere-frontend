@@ -4,3 +4,6 @@
 [submodule "src/main/webapp/static/js/custom/widget-ui"]
 	path = src/main/webapp/static/js/custom/widget-ui
 	url = https://github.com/PTAnywhere/ptAnywhere-widget.git
+[submodule "widget"]
+	path = widget
+	url = https://github.com/PTAnywhere/ptAnywhere-widget.git

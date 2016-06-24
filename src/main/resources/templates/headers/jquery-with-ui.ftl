@@ -3,7 +3,7 @@
     <script>
         if (!window.jQuery) {
             // Assumption: either all of them fail (hence the JS has not been loaded properly), or none does.
-            console.log("Error externally loading jQuery from CDN, including local copy.");
+            console.log('Error externally loading jQuery from CDN, including local copy.');
             document.write('<script src="${dependencies}/jquery.min.js"><\/script>');
             document.write('<script src="${dependencies}/core.min.js"><\/script>');
             document.write('<script src="${dependencies}/widget.min.js"><\/script>');

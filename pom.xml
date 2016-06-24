@@ -88,6 +88,9 @@
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static/images">
                                     <fileset dir="widget/dist/img" />
                                 </copy>
+                                <copy todir="${project.build.directory}/${project.build.finalName}/static/html">
+                                    <fileset dir="widget/dist/html" />
+                                </copy>
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static/js/vendors">
                                     <fileset dir="widget/scripts/tmp/vendors" />
                                 </copy>

@@ -9,7 +9,7 @@
     <link href="${base}/css/console.css" rel="stylesheet" type="text/css"/>
 
     <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-websocket.js"></script>
-    <script type="text/javascript" src="${base}/js/ptAnywhere.min.js"></script>
+    <script type="text/javascript" src="${base}/js/console.js"></script>
     <script>
         $(function() {
             var cmd = ptAnywhereWidgets.console.create('.commandLine');

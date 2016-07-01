@@ -82,6 +82,9 @@
                                       tofile="${project.build.outputDirectory}/environment.properties"/>
                                 <copy file="widget/dist/ptAnywhere.min.js"
                                       tofile="${project.build.directory}/${project.build.finalName}/static/js/ptAnywhere.min.js"/>
+                                <!-- temporary -->
+                                <copy file="widget/app/console.js"
+                                      tofile="${project.build.directory}/${project.build.finalName}/static/js/console.js"/>
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static/css">
                                     <fileset dir="widget/dist/css" />
                                 </copy>

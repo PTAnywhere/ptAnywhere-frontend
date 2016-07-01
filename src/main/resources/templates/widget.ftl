@@ -15,8 +15,8 @@
     <!-- PTAnywhere -->
     <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-http.js"></script>
 
-    <link href="${base}/css/widget.css" rel="stylesheet" type="text/css"/>
-    <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css"/>
+    <link href="${base}/css/widget.css" rel="stylesheet" type="text/css" />
+    <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css" />
 
     <script>
         /*$(function() {

@@ -1,4 +1,4 @@
-# PT Anywhere widgets
+# PT Anywhere frontend
 
 JavaScript library for the [PT Anywhere HTTP API](https://github.com/PTAnywhere/ptAnywhere-api) and some HTML widgets which use it.
 Both components are being developed as part of the [FORGE](http://ict-forge.eu/) project.

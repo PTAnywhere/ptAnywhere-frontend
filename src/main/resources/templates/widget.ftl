@@ -7,9 +7,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 
     <#include "headers/angular.ftl">
-    <#include "headers/angular-route.ftl">
-    <#include "headers/jquery-with-ui.ftl">
     <#include "headers/bootstrap.ftl">
+    <#include "headers/jquery-ui.ftl">
     <#include "headers/visjs.ftl">
 
     <!-- PTAnywhere -->

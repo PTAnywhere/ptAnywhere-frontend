@@ -80,16 +80,8 @@
                                 <delete file="${project.build.outputDirectory}/environment.properties"/>
                                 <copy file="${property-file}"
                                       tofile="${project.build.outputDirectory}/environment.properties"/>
-                                <copy file="widget/dist/ptAnywhere.min.js"
-                                      tofile="${project.build.directory}/${project.build.finalName}/static/js/ptAnywhere.min.js"/>
-                                <!-- temporary -->
-                                <copy file="widget/app/console.js"
-                                      tofile="${project.build.directory}/${project.build.finalName}/static/js/console.js"/>
-                                <copy todir="${project.build.directory}/${project.build.finalName}/static/css">
-                                    <fileset dir="widget/dist/css" />
-                                </copy>
-                                <copy todir="${project.build.directory}/${project.build.finalName}/static/images">
-                                    <fileset dir="widget/dist/img" />
+                                <copy todir="${project.build.directory}/${project.build.finalName}/static">
+                                    <fileset dir="widget/dist" includes="**" />
                                 </copy>
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static/js/vendors">
                                     <fileset dir="widget/scripts/tmp/vendors" />

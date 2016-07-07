@@ -12,23 +12,14 @@
     <#include "headers/visjs.ftl">
 
     <!-- PTAnywhere -->
-    <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-http.js"></script>
-
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css" />
     <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css" />
 
-    <script>
-        /*$(function() {
-            // Global, better if it is passed by parameter to widget creator...
-            var widget = ptAnywhereWidgets.all.create( '.widget', '${apiUrl}', '${base}/images/',
-                                                    { sessionCreation: {sessionCreation} } );
-        });*/
-    </script>
-
-    <script src="${base}/js/ptAnywhere.min.js"></script>
+    <script src="${base}/ptAnywhere.min.js"></script>
     <script>
         angular.module('ptAnywhere')
                 .constant('baseUrl', '${base}')
+                .constant('imagesUrl', '${base}/img')
                 .constant('apiUrl', '${apiUrl}')
                 .constant('fileToOpen', '${fileToOpen}');
     </script>

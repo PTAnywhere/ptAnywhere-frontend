@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html ng-app="ptAnywhere">
+<html ng-app="ptAnywhere.widget">
 <head>
     <title>${title}</title>
     <link rel="icon" type="image/png" href="${base}/images/icon.png">
@@ -13,14 +13,15 @@
 
     <!-- PTAnywhere -->
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css" />
+    <link href="${base}/css/console.css" rel="stylesheet" type="text/css" />
     <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css" />
 
-    <script src="${base}/ptAnywhere.min.js"></script>
+    <script src="${base}/ptAnywhere.js"></script>
     <script>
-        angular.module('ptAnywhere')
-                .constant('baseUrl', '${base}')
+        angular.module('ptAnywhere.api.http')
+                .constant('url', '${apiUrl}');
+        angular.module('ptAnywhere.widget.configuration')
                 .constant('imagesUrl', '${base}/img')
-                .constant('apiUrl', '${apiUrl}')
                 .constant('fileToOpen', '${fileToOpen}');
     </script>
 </head>

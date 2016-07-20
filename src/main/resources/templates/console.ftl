@@ -1,27 +1,27 @@
 <!DOCTYPE html>
-<html>
+<html ng-app="ptAnywhere.widget.console">
 <head lang="en">
     <meta charset="UTF-8">
     <title>Console</title>
 
     <#include "headers/jquery.ftl">
+    <#include "headers/angular.ftl">
+    <#include "headers/bootstrap.ftl">
 
-    <link href="${base}/css/console.css" rel="stylesheet" type="text/css"/>
+    <!-- PTAnywhere -->
+    <link href="${base}/css/console.css" rel="stylesheet" type="text/css" />
+    <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css" />
 
-    <script type="text/javascript" src="${base}/js/custom/ptAnywhere-js/js/libPTAnywhere-websocket.js"></script>
-    <script type="text/javascript" src="${base}/console.js"></script>
+    <script src="${base}/ptAnywhere.js"></script>
     <script>
-        $(function() {
-            var cmd = ptAnywhereWidgets.console.create('.commandLine');
-            ptAnywhere.websocket.start('${websocketURL}',
-                                        cmd.getConnectionCallback(),
-                                        cmd.getUpdateCallback(),
-                                        cmd.getReplaceCommandCallback(),
-                                        cmd.getWarningCallback());
-        });
+        angular.module('ptAnywhere.widget.console')
+                .constant('endpoint', '${websocketURL}');
     </script>
 </head>
-<body>
-    <div class="commandLine"></div>
+<body ng-controller="CommandLineController as cmd">
+    <div scroll-glue>
+        <div class="commandline" disabled="cmd.disabled" output="cmd.output" input="cmd.lastLine"
+             send-command="cmd.send(command)" on-previous="cmd.onPreviousCommand()" on-next="cmd.onNextCommand()">
+    </div>
 </body>
 </html>

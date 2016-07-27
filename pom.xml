@@ -81,7 +81,10 @@
                                 <copy file="${property-file}"
                                       tofile="${project.build.outputDirectory}/environment.properties"/>
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static">
-                                    <fileset dir="widget/dist" includes="**" />
+                                    <fileset dir="widget/scripts/tmp/dist" includes="**" />
+                                </copy>
+                                <copy todir="${project.build.directory}/${project.build.finalName}/static/img">
+                                    <fileset dir="widget/dist/img" includes="**" />
                                 </copy>
                                 <copy todir="${project.build.directory}/${project.build.finalName}/static/js/vendors">
                                     <fileset dir="widget/scripts/tmp/vendors" />

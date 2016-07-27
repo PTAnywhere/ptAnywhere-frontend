@@ -13,7 +13,7 @@
 
     <!-- PTAnywhere -->
     <link href="${base}/css/widget.css" rel="stylesheet" type="text/css" />
-    <link href="${base}/css/ptAnywhere.css" rel="stylesheet" type="text/css" />
+    <link href="${base}/ptAnywhere.min.css" rel="stylesheet" type="text/css" />
 
     <script src="${base}/ptAnywhere.min.js"></script>
     <script>

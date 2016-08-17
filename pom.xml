@@ -6,7 +6,7 @@
     <groupId>uk.ac.open.kmi.forge.ptAnywhere</groupId>
     <artifactId>ptAnywhere-frontend</artifactId>
     <packaging>war</packaging>
-    <version>2.0.2</version>
+    <version>2.2.0</version>
     <name>PT Anywhere frontend application</name>
 
 
